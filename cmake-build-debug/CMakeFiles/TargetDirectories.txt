@@ -1,3 +1,3 @@
-C:/Users/Matteo/Desktop/Matteo/progettoSo/progettoSo/cmake-build-debug/CMakeFiles/progettoSo.dir
-C:/Users/Matteo/Desktop/Matteo/progettoSo/progettoSo/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Matteo/Desktop/Matteo/progettoSo/progettoSo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/matteo/CLionProjects/progettoSo/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/matteo/CLionProjects/progettoSo/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/matteo/CLionProjects/progettoSo/cmake-build-debug/CMakeFiles/progettoSo.dir
