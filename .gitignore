@@ -6,4 +6,3 @@ cmake-build-release/*
 !*.h
 
 cmake-build-debug/
-j
