@@ -11,6 +11,7 @@ errors.o: ./errors/errors.h ./errors/errors.c
 	gcc -c ./errors/errors.h ./errors/errors.c
 
 clean:
+	rm -f *.o
 	rm -f ./*/*.o
 	rm -f ./*/*.gch
 	rm -f spaced
