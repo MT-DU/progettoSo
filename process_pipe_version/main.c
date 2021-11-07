@@ -1,6 +1,6 @@
-#include <stdio.h>
+#include "hud/hud.h"
 
 int main() {
-    printf("Hello, World!\n");
+    mainApp();
     return 0;
 }
