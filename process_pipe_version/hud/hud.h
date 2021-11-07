@@ -17,7 +17,7 @@ void setupColors();
 void processStarShip();
 void mainWindow();
 void mainApp();
-void createLogo(char[300]);
+void printLogo(WINDOW *win, int max_x);
 
 // gnome-terminal --geometry=widthxheight+Xposition+Yposition
 // resize -s <rows> <columns>

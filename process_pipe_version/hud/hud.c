@@ -15,19 +15,16 @@ void mainWindow(){
     WINDOW* hud_win = newwin(0,0,0,0); // dovrebbe essere fullscreen
     const int MAX_Y = getmaxy(hud_win), MAX_X = getmaxx(hud_win);
     wattron(hud_win, COLOR_PAIR(1));
-    //wcolor_set(hud_win, COLOR_BLACK, NULL);
+    wcolor_set(hud_win, COLOR_BLACK, NULL);
     //wbkgd(hud_win, COLOR_YELLOW);
     char scelta1[] = "Play the game.";
-    char logo[1000] = "";
-    createLogo(logo);
-    mvwprintw(hud_win, 0, 0, logo);
-    mvwprintw(hud_win, 10, 0, "%d %d", MAX_X, MAX_Y);
-    wmove(hud_win, 5,0);
+    printLogo(hud_win, MAX_X);
+    wmove(hud_win, 6,0);
     whline(hud_win, ACS_HLINE, getmaxx(hud_win));
     wattron(hud_win, COLOR_PAIR(3));
-    wbkgd(hud_win, COLOR_RED);
+    //wbkgd(hud_win, COLOR_RED);
 
-    mvwprintw(hud_win, MAX_Y/2, MAX_X/2, "%s", scelta1);
+    mvwprintw(hud_win, MAX_Y/2, MAX_X/2 - strlen(scelta1), "%s", scelta1);
     refresh();
     wgetch(hud_win);
 
@@ -39,24 +36,31 @@ void mainWindow(){
  * 
  */
 void mainApp(){
+
     initscr();
-    setupColors();
     noecho();
     curs_set(NO_CURSOR);
+
+    setupColors();
     mainWindow();
-    getch();
+    
     refresh();
+    getch();
     endwin();
 }
 
-void createLogo (char sus[300]) {
+void printLogo (WINDOW* win, int max_x) {
 
-    strcat(sus,LOGO1);
-    strcat(sus,"\n");
-    strcat(sus,LOGO2);
-    strcat(sus,"\n");
-    strcat(sus,LOGO3);
-    strcat(sus,"\n");
-    strcat(sus,LOGO4);
+    char logo1[sizeof(LOGO1)] = "", logo2[sizeof(LOGO2)] = "", logo3[sizeof(LOGO3)] = "", logo4[sizeof(LOGO4)] = "";
+
+    strcat(logo1, LOGO1);
+    strcat(logo2, LOGO2);
+    strcat(logo3, LOGO3);
+    strcat(logo4, LOGO4);
+
+    mvwprintw(win, 1, max_x/2 - 30, logo1);
+    mvwprintw(win, 2, max_x/2 - 30, logo2);
+    mvwprintw(win, 3, max_x/2 - 30, logo3);
+    mvwprintw(win, 4, max_x/2 - 30, logo4);
 
 }
