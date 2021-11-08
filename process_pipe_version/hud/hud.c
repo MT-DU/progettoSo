@@ -17,17 +17,23 @@ void mainMenu(WINDOW *win, int max_y, int max_x){
     do{
         hudMainMenu(win, max_y, max_x);
         printMainMenu(win, max_y, max_x, counter);
+        cbreak();
+        keypad(win, true);
         getInput = wgetch(win);
         keyPadSelector(win, PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
         refresh();
         
-    }while(getInput != 27);
-    
+    }while(getInput != 113); // q è il tasto per quittare
 }
 
 void printMainMenu(WINDOW *win, int max_y, int max_x, int selection){
     
+    mvwprintw(win, divideByTwo(max_y) + SPACE_BETWEEN_CHOICES * PLAY_GAME_NUMBER, divideByTwo(max_x) - divideByTwo(sizeof(MODE_GAME)) - 3, " ");
+    mvwprintw(win, divideByTwo(max_y) + SPACE_BETWEEN_CHOICES * MODE_GAME_NUMBER, divideByTwo(max_x) - divideByTwo(sizeof(MODE_GAME)) - 3, " ");
+    mvwprintw(win, divideByTwo(max_y) + SPACE_BETWEEN_CHOICES * QUIT_GAME_NUMBER, divideByTwo(max_x) - divideByTwo(sizeof(MODE_GAME)) - 3, " ");
+
     mvwprintw(win, divideByTwo(max_y) + SPACE_BETWEEN_CHOICES * selection, divideByTwo(max_x) - divideByTwo(sizeof(MODE_GAME)) - 3, ">");
+
     mvwprintw(win, divideByTwo(max_y), divideByTwo(max_x) - divideByTwo(sizeof(PLAY_GAME)), PLAY_GAME);
     mvwprintw(win, divideByTwo(max_y) + SPACE_BETWEEN_CHOICES, divideByTwo(max_x) - divideByTwo(sizeof(MODE_GAME)), MODE_GAME);
     mvwprintw(win, divideByTwo(max_y) + SPACE_BETWEEN_CHOICES*QUIT_GAME_NUMBER, divideByTwo(max_x) - divideByTwo(sizeof(QUIT_GAME)), QUIT_GAME);
@@ -90,8 +96,9 @@ void mainWindow(){
     WINDOW* hud_win = newwin(0,0,0,0); // dovrebbe essere fullscreen
     const int MAX_Y = getmaxy(hud_win), MAX_X = getmaxx(hud_win);    
     mainMenu(hud_win, MAX_Y, MAX_X);
+    nocbreak();
     refresh();
-    wgetch(hud_win);
+    //wgetch(hud_win);
 }
 
 /**
@@ -109,6 +116,6 @@ void mainApp(){
     mainWindow();
     
     refresh();
-    getch();
+    //getch();
     endwin();
 }
