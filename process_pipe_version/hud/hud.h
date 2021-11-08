@@ -22,8 +22,10 @@
 #define QUIT_GAME "Quit the game."
 
 int divideByTwo(int coord);
-void printMainMenu(WINDOW *win, int max_y, int max_x, int selector);
-int keyPadSelector(WINDOW *win, int min_y, int max_y, int counter);
+void printMainMenu(WINDOW *win, int max_y, int max_x, int selection);
+void hudMainMenu(WINDOW *win, int max_y, int max_x);
+void mainMenu(WINDOW *win, int max_y, int max_x);
+void keyPadSelector(WINDOW *win, int min_y, int max_y, int input, int* counter);
 void printLogo(WINDOW *win, int max_x);
 void setupColors();
 void processStarShip();
