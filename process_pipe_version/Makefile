@@ -1,11 +1,11 @@
-spaced: ./hud/hud.h ./errors/errors.h hud.o errors.o main.o
-	gcc ./hud/hud.h ./errors/errors.h hud.o errors.o main.o -o spaced -lncurses
+spaced: ./menu/menu.h ./errors/errors.h menu.o errors.o main.o
+	gcc ./menu/menu.h ./errors/errors.h menu.o errors.o main.o -o spaced -lncurses
 
-main.o: ./hud/hud.h ./errors/errors.h main.c
-	gcc -c ./hud/hud.h ./errors/errors.h main.c
+main.o: ./menu/menu.h ./errors/errors.h main.c
+	gcc -c ./menu/menu.h ./errors/errors.h main.c
 
-hud.o: ./errors/errors.h ./hud/hud.h ./hud/hud.c
-	gcc -c ./errors/errors.h ./hud/hud.h ./hud/hud.c
+menu.o: ./errors/errors.h ./menu/menu.h ./menu/menu.c
+	gcc -c ./errors/errors.h ./menu/menu.h ./menu/menu.c
 
 errors.o: ./errors/errors.h ./errors/errors.c
 	gcc -c ./errors/errors.h ./errors/errors.c

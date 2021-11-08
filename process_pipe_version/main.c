@@ -1,4 +1,4 @@
-#include "hud/hud.h"
+#include "menu/menu.h"
 
 int main() {
     mainApp();

@@ -1,0 +1,12 @@
+navicella nemica: 
+           \./ 
+           <x>
+           /^\
+Possibili idee (aggiornate al 27/01)
+- Strutturare il gioco avendo 2+ livelli, in cui cambia l'hud del livello
+- Mettere un boss alla fine del livello finale
+- Creare un hud che dica il numero di vite, nemici rimanenti, livello attuale, timer della partita , creare paesaggio che dia senso di movimento
+- Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof 
+- I nemici dei livelli successivi usano bombe più grandi o sono più veloci
+- Ogni volta che superi un livello recuperi una vita nelle difficoltà più alte
+- Aggingere voce High score nel menù principale (non so come contare lo score) 
