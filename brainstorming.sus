@@ -2,6 +2,13 @@ navicella nemica:
            \./ 
            <x>
            /^\
+
+amogus: ඩ
+
+comandi utili:
+gnome-terminal --geometry=widthxheight+Xposition+Yposition
+resize -s <rows> <columns>
+
 Possibili idee (aggiornate al 27/01)
 - Strutturare il gioco avendo 2+ livelli, in cui cambia l'hud del livello
 - Mettere un boss alla fine del livello finale

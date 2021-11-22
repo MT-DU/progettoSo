@@ -8,7 +8,7 @@
 typedef struct point{
     int x;
     int y;
-}Point;
+} Point;
 
 /* DEFINIZIONE MACRO */
 #define NO_CURSOR 0
@@ -32,24 +32,25 @@ typedef struct point{
 #define PLAY_GAME "Play the game."
 #define MODE_GAME "Select the Game Mode."
 #define QUIT_GAME "Quit the game."
-#define MIN_POS 0 
+#define MIN_POS 0
+#define EASY_MODE "Modalita' Facile"
+#define HARD_MODE "Modalita' Difficile"
+#define CUSTOM_MODE "Personalizza"
+#define EASY_MODE_NUMBER 0
+#define HARD_MODE_NUMBER 1
+#define CUSTOM_MODE_NUMBER 2
 
 /* PROTOTIPI FUNZIONI / PROCEDURE */
 void mainApp();
+void setupColors();
 void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
 void hudMainMenu(WINDOW *win, Point max_res);
+void pickColor(WINDOW* win, int type_color);
+void printLogo(WINDOW *win, Point max_res);
 void printMainMenu(WINDOW *win, Point max_res, int selection);
 void keyPadSelector(WINDOW *win, int min_choice, int max_choice, int input, int* counter);
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter);
-void printLogo(WINDOW *win, Point max_res);
-void pickColor(WINDOW* win, int type_color);
 int divideByTwo(int coord);
-void setupColors();
-void processStarShip();
-
-
-
-// gnome-terminal --geometry=widthxheight+Xposition+Yposition
-// resize -s <rows> <columns>
-// amogus: ඩ
+void gameMode (WINDOW* win, Point max_res);
+void printGameMode (WINDOW* win, Point max_res, int selection) ;
