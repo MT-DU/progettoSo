@@ -55,8 +55,9 @@ void mainMenu(WINDOW *win, Point max_res){
     keypad(win, true); 
     cbreak();
     do{
+        wclear(win);
         hudMainMenu(win, max_res);
-        printMainMenu(win, max_res, counter);
+        printMenu(win, max_res, counter, PRINT_MENU_MAIN);
         getInput = wgetch(win);
         keyPadSelector(win, PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
         selectOptionMainMenu(win, max_res, &getInput, counter);
@@ -120,40 +121,6 @@ void printLogo (WINDOW* win, Point max_res) {
 }
 
 /**
- * @brief Questa procedura ha lo scopo di stampare le voci del menu
- * 
- * @param win window attiva
- * @param max_res
- * @param selection opzione selezionata dal main menu
- */
-void printMainMenu(WINDOW *win, Point max_res, int selection){
-    int i, y, x;
-    int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x), modeGameDivided = divideByTwo(sizeof(MODE_GAME));
-    for(i = 0; i <= QUIT_GAME_NUMBER; i++){ //blocco di codice per rimuovere i '>' dal menu
-        y = yDivided + SPACE_BETWEEN_CHOICES * i;
-        x = xDivided - modeGameDivided - SPACE_BETWEEN_CHOICES;
-        mvwprintw(win, y, x, " ");
-    }
-
-    //riga di codice che aggiunge un '>' affianco all'opzione selezionata
-    y = yDivided + SPACE_BETWEEN_CHOICES * selection;
-    x = xDivided - modeGameDivided - SPACE_BETWEEN_CHOICES;
-    mvwprintw(win, y, x, SELECTOR);
-
-    x = xDivided - divideByTwo(sizeof(PLAY_GAME));
-    mvwprintw(win, yDivided, x, PLAY_GAME);
-
-    y = yDivided + SPACE_BETWEEN_CHOICES;
-    x = xDivided - modeGameDivided;
-    mvwprintw(win, y, x, MODE_GAME);
-    
-    y = yDivided + SPACE_BETWEEN_CHOICES*QUIT_GAME_NUMBER;
-    x = xDivided - divideByTwo(sizeof(QUIT_GAME));
-    mvwprintw(win, y, x, QUIT_GAME);
-    refresh();
-}
-
-/**
  * @brief Procedura che si occupa di incrementare o decrementare la variabile counter in base all'input delle frecce direzionali
  * 
  * @param win 
@@ -199,13 +166,6 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter){
                 wclear(win);
                 hudMainMenu(win, max_res);
                 gameMode(win, max_res);
-                for(i = 0; i <= CUSTOM_MODE_NUMBER; i++){ //blocco di codice per rimuovere i '>' dal menu
-                    y = yDivided + SPACE_BETWEEN_CHOICES * i;
-                    x = xDivided - hardModeDiv - SPACE_BETWEEN_CHOICES;
-                    mvwprintw(win, y, x, " ");
-                }
-                wclear(win);
-                hudMainMenu(win, max_res);
                 break;
             case QUIT_GAME_NUMBER:
                 (*input) = ASCII_CODE_Q;
@@ -221,14 +181,9 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter){
  * @param max_res 
  */
 void gameMode (WINDOW* win, Point max_res) {
-
-    int i;
-
-    int getInput, counter = 0;
-    keypad(win, true); 
-    cbreak();
+    int i, getInput, counter = 0;
     do{
-        printGameMode(win, max_res, counter);
+        printMenu(win, max_res, counter, PRINT_MENU_GAME_MODE);
         getInput = wgetch(win);
         keyPadSelector(win, EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
         refresh();
@@ -236,39 +191,57 @@ void gameMode (WINDOW* win, Point max_res) {
 }
 
 /**
- * @brief Procedura che stampa il sub-menu della scelta della difficolta'
+ * @brief Procedura che si occupa di stampare i menu
  * 
  * @param win 
  * @param max_res 
  * @param selection 
  */
-void printGameMode (WINDOW* win, Point max_res, int selection) {
-
+void printMenu (WINDOW* win, Point max_res, int selection, int menu) {
     int i, y, x;
-    int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x), hardModeDiv = divideByTwo(sizeof(HARD_MODE));
-
-    for(i = 0; i <= CUSTOM_MODE_NUMBER; i++){ //blocco di codice per rimuovere i '>' dal menu
+    int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x), indexPrint, row = NUMBER_MENUS*NUMBER_CHOICES;
+    char vetStringsMenu[NUMBER_MENUS*NUMBER_CHOICES][DIM_MAX_PRINT_MENU]={{PLAY_GAME},{MODE_GAME},{QUIT_GAME},{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}};
+    int longestString = searchLongestString(row, vetStringsMenu, NUMBER_CHOICES*menu, NUMBER_CHOICES*menu+NUMBER_CHOICES);
+    int longestStringDivided = divideByTwo(longestString);
+    
+    for(i = 0; i < NUMBER_CHOICES; i++) { //blocco di codice per rimuovere i '>' dal menu
         y = yDivided + SPACE_BETWEEN_CHOICES * i;
-        x = xDivided - hardModeDiv - SPACE_BETWEEN_CHOICES;
+        x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
         mvwprintw(win, y, x, " ");
     }
 
-    //riga di codice che aggiunge un '>' affianco all'opzione selezionata
-    y = yDivided + SPACE_BETWEEN_CHOICES * selection;
-    x = xDivided - hardModeDiv - SPACE_BETWEEN_CHOICES;
-    mvwprintw(win, y, x, SELECTOR);
+    for(i=0;i<NUMBER_CHOICES;i++) {
+        indexPrint = i+(NUMBER_CHOICES*menu);
+        y = yDivided + SPACE_BETWEEN_CHOICES * selection;
+        x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
+        mvwprintw(win, y, x, SELECTOR);
 
-    x = xDivided - divideByTwo(sizeof(EASY_MODE));
-    mvwprintw(win, yDivided, x, EASY_MODE);
-
-    y = yDivided + SPACE_BETWEEN_CHOICES;
-    x = xDivided - hardModeDiv;
-    mvwprintw(win, y, x, HARD_MODE);
+        y = yDivided + SPACE_BETWEEN_CHOICES*i;
+        x = xDivided - divideByTwo(strlen(vetStringsMenu[indexPrint]));
+        mvwprintw(win, y, x, vetStringsMenu[indexPrint]);
+    }
     
-    y = yDivided + SPACE_BETWEEN_CHOICES*CUSTOM_MODE_NUMBER;
-    x = xDivided - divideByTwo(sizeof(CUSTOM_MODE));
-    mvwprintw(win, y, x, CUSTOM_MODE);
     refresh();
+}
+
+/**
+ * @brief Funzione che restituisce la lunghezza della stringa piu' lunga di un sottoinsieme della matrice
+ * viene utilizzata per la stampa dei casi del menu
+ * 
+ * @param vetStrings, contiene le stringhe di stampoa
+ * @param start, indice di partenza del sottoinsieme
+ * @param end, indice di fine sottoinsieme
+ * @return lunghezza della stringa piu' lunga
+ */
+int searchLongestString(int row, char vetStrings[row][DIM_MAX_PRINT_MENU], int start, int end){
+    int i, length = strlen(vetStrings[start]), temp;
+    for(i = start+1; i < end; i++){
+        temp = strlen(vetStrings[i]);
+        if(length < temp){
+            length = temp;
+        }
+    }
+    return length;
 }
 
 /**
