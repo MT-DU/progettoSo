@@ -1,23 +1,12 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <ncurses.h>
 #include "../errors/errors.h"
-#include <string.h>
-
-typedef struct point{
-    int x;
-    int y;
-} Point;
+#include "../window/gestisciFinestre.h"
 
 /* DEFINIZIONE MACRO */
 #define NO_CURSOR 0
 #define YES_CURSOR 1
-#define ASCII_CODE_Q 113
+#define ASCII_CODE_q 113
+#define ASCII_CODE_Q 81
 #define ASCII_CODE_ENTER 10
-#define SELECTOR ">"
-#define PAIR_COLOR_LOGO 1
-#define PAIR_COLOR_TEXT 2
 #define NUMBER_CHOICES 3 //indica il numero di scelte per menu, da modificare nel caso in cui si aumentino i casi dei vari menu
 
 //macro gestione hud
@@ -29,9 +18,7 @@ typedef struct point{
 #define LOGO4 "    |_|                                                     "
 #define SIZE_LOGO 61 // lunghezza della stringa della singola macro logo
 #define NUM_LOGHI 4 // tiene conto del numero di macro per i logo ci sono
-#define SPACE_BETWEEN_CHOICES 3
-#define CREATE_OFFSET_SPACES 3
-#define NUMBER_MENUS 2 //numero di menu implementati nel software
+
 //macro gestione menu principale
 #define PLAY_GAME_NUMBER 0
 #define MODE_GAME_NUMBER 1
@@ -40,6 +27,8 @@ typedef struct point{
 #define MODE_GAME "Select the Game Mode."
 #define QUIT_GAME "Quit the game."
 #define PRINT_MENU_MAIN 0 
+#define LABEL_MAIN_MENU {{PLAY_GAME},{MODE_GAME},{QUIT_GAME}}
+#define EXIT_LABEL_HUD "Press q to exit the game"
 
 //macro gestione menu difficolta
 #define EASY_MODE_NUMBER 0
@@ -49,20 +38,18 @@ typedef struct point{
 #define HARD_MODE "Modalita' Difficile"
 #define CUSTOM_MODE "Personalizza"
 #define PRINT_MENU_GAME_MODE 1 
-#define DIM_MAX_PRINT_MENU 30
+#define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
+#define BACK_LABEL_HUD "Press q to go back"
+
 
 /* PROTOTIPI FUNZIONI / PROCEDURE */
 void mainApp();
-void setupColors();
+
 void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
-void hudMainMenu(WINDOW *win, Point max_res);
-void pickColor(WINDOW* win, int type_color);
+void hudMainMenu(WINDOW *win, Point max_res, int menu);
 void printLogo(WINDOW *win, Point max_res);
-void keyPadSelector(WINDOW *win, int min_choice, int max_choice, int input, int* counter);
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter);
-int divideByTwo(int coord);
 void gameMode (WINDOW* win, Point max_res);
-void printMenu (WINDOW* win, Point max_res, int selection, int menu);
-int searchLongestString(int row, char vetStrings[row][DIM_MAX_PRINT_MENU], int start, int end);
+
 

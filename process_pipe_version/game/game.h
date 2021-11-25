@@ -1,16 +1,13 @@
 #include "menu/menu.h"
+#include "../window/gestisciFinestre.h"
 
 #define STARSHIP {'\n',' ',' ','/','\\','\n','>','|',' ',' ','|','>','\n',' ',' ','\\','/','\n','\n'}
 
-typedef struct allyship{
+typedef struct ship{
     Point pos;
-    char sprite[sizeof(STARSHIP)];
-} AllyShip;
+   // char sprite[sizeof(STARSHIP)];
+} Ship;
 
-typedef struct enemyship{
-    Point pos;
-    char sprite[sizeof(STARSHIP)];
-} EnemyShip;
 
 #define Y_HSEPARATOR 4
 
