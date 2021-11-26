@@ -4,6 +4,7 @@
 
 #define STARSHIP {'\n',' ',' ','/','\\','\n','>','|',' ',' ','|','>','\n',' ',' ','\\','/','\n','\n'}
 #define DIM_STARSHIP 50
+
 typedef struct ship{
     Point pos;
     char sprite[DIM_STARSHIP];
@@ -40,6 +41,6 @@ void printObjects(WINDOW* win, Point p, int pipeIn);
 void checkCollision(WINDOW* win, Point p, int pipeIn);
 bool isGameOver(/*Pensare a cosa metterci*/);
 
-void printStarShip (Ship ship);
+void printStarShip (WINDOW* win, Ship ship);
 int moveAllyShip (WINDOW* win, int* yPos);
 bool checkPos (int yPos);

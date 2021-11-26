@@ -7,6 +7,9 @@
  * @param p 
  */
 void mainGame(WINDOW* win, Point p){
+    mvwprintw(win, 5,5,"madonna");
+    wrefresh(win);
+    delay_output(500);
     pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS], allyShip;
     int fileDes[DIM_PIPE];
     if(pipe(fileDes) == PROCESS_RETURN_FAILURE) {
@@ -55,12 +58,12 @@ void mountainsBgEffect(WINDOW* win, Point p){
 void allyShipController(WINDOW* win, Point p, int pipeOut){
     Ship ship;
     char sprite[DIM_STARSHIP] = STARSHIP;
-    ship.pos.x = DEFAULT_X_ALLY_SHIP;
+    ship.pos.x = DEFAULT_X_ALLY_SHIP + Y_HSEPARATOR;
     ship.pos.y = divideByTwo(p.y - Y_HSEPARATOR) + Y_HSEPARATOR;
     strcpy(ship.sprite, sprite);
     write(pipeOut, &ship,sizeof(ship));
     while (true) {
-        moveAllyShip(win, &ship.pos.x);
+        moveAllyShip(win, &ship.pos.y);
         write(pipeOut, &ship,sizeof(ship));
     }
 }
@@ -98,13 +101,14 @@ void bombController(WINDOW* win, Point p, int pipeOut){
  * @param pipeOut 
  */
 void printObjects (WINDOW* win, Point p, int pipeIn) {
-    Ship allyShip, ship;
+    Ship ship;
     while (true) {
         read(pipeIn, &ship, sizeof(ship));
         if(checkPos(ship.pos.y)){
-            printStarShip(ship);
+            printStarShip(win, ship);
         }
         wrefresh(win);
+        usleep(500000);
     }
     
 }
@@ -122,13 +126,16 @@ bool isGameOver (/*Pensare a cosa metterci*/){
 }
 
 // sample of starship
-void printStarShip (Ship ship) {
-    mvprintw(ship.pos.x, ship.pos.y, ship.sprite);
+void printStarShip (WINDOW* win, Ship ship) {
+    mvwprintw(win, ship.pos.y, ship.pos.x, ship.sprite);
 }
 
 int moveAllyShip (WINDOW* win, int* yPos) {
+    keypad(win, TRUE);
+    cbreak();
     int arrow = getch();
     keyPadSelector(win, Y_HSEPARATOR, Y_MAXPOS-STARSHIP_SIZE, arrow, yPos);
+    nocbreak();
     return arrow;
 }
 

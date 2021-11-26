@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <unistd.h>
 
 /* MACRO PER GESTIRE LE ECCEZIONI */
 #define TYPE_EXCEPTION_PIPE_CREATION_FAILURE 1
