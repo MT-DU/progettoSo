@@ -7,9 +7,6 @@
  * @param p 
  */
 void mainGame(WINDOW* win, Point p){
-    mvwprintw(win, 5,5,"madonna");
-    wrefresh(win);
-    delay_output(500);
     pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS], allyShip;
     int fileDes[DIM_PIPE];
     if(pipe(fileDes) == PROCESS_RETURN_FAILURE) {
@@ -58,13 +55,12 @@ void mountainsBgEffect(WINDOW* win, Point p){
 void allyShipController(WINDOW* win, Point p, int pipeOut){
     Ship ship;
     char sprite[DIM_STARSHIP] = STARSHIP;
-    ship.pos.x = DEFAULT_X_ALLY_SHIP + Y_HSEPARATOR;
+    ship.pos.x =10;
     ship.pos.y = divideByTwo(p.y - Y_HSEPARATOR) + Y_HSEPARATOR;
     strcpy(ship.sprite, sprite);
-    write(pipeOut, &ship,sizeof(ship));
     while (true) {
+        write(pipeOut, &ship, sizeof(ship));
         moveAllyShip(win, &ship.pos.y);
-        write(pipeOut, &ship,sizeof(ship));
     }
 }
 
@@ -108,7 +104,6 @@ void printObjects (WINDOW* win, Point p, int pipeIn) {
             printStarShip(win, ship);
         }
         wrefresh(win);
-        usleep(500000);
     }
     
 }
@@ -133,7 +128,7 @@ void printStarShip (WINDOW* win, Ship ship) {
 int moveAllyShip (WINDOW* win, int* yPos) {
     keypad(win, TRUE);
     cbreak();
-    int arrow = getch();
+    int arrow = wgetch(win);
     keyPadSelector(win, Y_HSEPARATOR, Y_MAXPOS-STARSHIP_SIZE, arrow, yPos);
     nocbreak();
     return arrow;

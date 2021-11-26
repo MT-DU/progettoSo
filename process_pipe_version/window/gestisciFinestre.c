@@ -14,15 +14,11 @@ void keyPadSelector(WINDOW *win, int min_choice, int max_choice, int input, int*
         case KEY_UP:
             if((*counter)>min_choice){
                 (*counter)--;
-                mvwprintw(win,30,10,"su");
-                wrefresh(win);
             }
             break;
         case KEY_DOWN:
             if((*counter)<max_choice){
                 (*counter)++;
-                mvwprintw(win,40,10,"giu");
-                wrefresh(win);
             }
     }
 }
