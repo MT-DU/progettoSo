@@ -124,7 +124,7 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter){
         switch (counter) {
             case PLAY_GAME_NUMBER:
                 wclear(win);
-                //TODO add play function
+                mainGame(win, max_res);
                 break;
             case MODE_GAME_NUMBER:
                 wclear(win);

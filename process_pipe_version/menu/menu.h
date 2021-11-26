@@ -1,5 +1,4 @@
-#include "../errors/errors.h"
-#include "../window/gestisciFinestre.h"
+#include "../game/game.h"
 
 /* DEFINIZIONE MACRO */
 #define NO_CURSOR 0

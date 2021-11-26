@@ -1,11 +1,14 @@
-spaced: ./window/gestisciFinestre.h ./menu/menu.h ./errors/errors.h gestisciFinestre.o menu.o errors.o main.o
-	gcc ./window/gestisciFinestre.h ./menu/menu.h ./errors/errors.h gestisciFinestre.o menu.o errors.o main.o -o spaced -lncurses
+spaced: ./window/gestisciFinestre.h ./menu/menu.h ./game/game.h ./errors/errors.h gestisciFinestre.o game.o menu.o errors.o main.o
+	gcc ./window/gestisciFinestre.h ./menu/menu.h ./game/game.h ./errors/errors.h gestisciFinestre.o game.o menu.o errors.o main.o -o spaced -lncurses
 
-main.o: ./menu/menu.h ./errors/errors.h ./window/gestisciFinestre.h  main.c 
-	gcc -c ./menu/menu.h ./errors/errors.h ./window/gestisciFinestre.h  main.c
+main.o: ./menu/menu.h main.c 
+	gcc -c ./menu/menu.h main.c
 
-menu.o: ./errors/errors.h ./menu/menu.h ./menu/menu.c ./window/gestisciFinestre.h ./window/gestisciFinestre.c
-	gcc -c ./errors/errors.h ./menu/menu.h ./menu/menu.c ./window/gestisciFinestre.h ./window/gestisciFinestre.c
+menu.o:  ./menu/menu.h ./game/game.h ./menu/menu.c 
+	gcc -c ./menu/menu.h ./game/game.h ./menu/menu.c
+
+game.o: ./game/game.h ./errors/errors.h ./window/gestisciFinestre.h ./game/game.c
+	gcc -c ./game/game.h ./errors/errors.h ./window/gestisciFinestre.h ./game/game.c
 
 gestisciFinestre.o: ./window/gestisciFinestre.h ./window/gestisciFinestre.c
 	gcc -c ./window/gestisciFinestre.h ./window/gestisciFinestre.c
