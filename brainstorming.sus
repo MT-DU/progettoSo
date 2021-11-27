@@ -9,11 +9,17 @@ comandi utili:
 gnome-terminal --geometry=widthxheight+Xposition+Yposition
 resize -s <rows> <columns>
 
-Possibili idee (aggiornate al 27/01)
+IDEE:
 - Strutturare il gioco avendo 2+ livelli, in cui cambia l'hud del livello
 - Mettere un boss alla fine del livello finale
 - Creare un hud che dica il numero di vite, nemici rimanenti, timer della partita, creare paesaggio che dia senso di movimento
 - Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof 
 - I nemici dei livelli successivi usano bombe più grandi o sono più veloci
 - Ogni volta che superi un livello recuperi una vita nelle difficoltà più alte
-- Aggingere voce High score nel menù principale (non so come contare lo score) 
+- Aggingere voce High score nel menù principale
+
+TODO:
+- la procedura printStarship sarebbe meglio renderla generica, passi in input una variabile che identifica se vuoi stampare l'astronave alleata o la navicella
+  nemica, e stampa lui, alla funzione che scrive nella pipe lasciamo che scriva solo le coordinate, richieste dalle specifiche
+  in particolare cambiamo ship.sprite con una macro, define ally 1 define enemy 2, switch che in base a quale delle due stampa quella corretta.
+- 
