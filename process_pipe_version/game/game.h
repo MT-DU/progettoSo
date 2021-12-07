@@ -4,6 +4,7 @@
 
 //#define STARSHIP {'\n',' ',' ','/','\\',' ',' ','\n','>','|','x',' ','|','>','\n',' ',' ','\\','/',' ',' ','\n'}
 #define STARSHIP {{"  /\\  "},{">|x |>"},{"  \\/  "}}
+#define ENEMYSHIP {{"\\./   "},{"<x>   "},{"/^\\   "}}
 
 #define ROWS_STARSHIP 3
 #define COLS_STARSHIP 6
@@ -14,11 +15,12 @@ typedef struct ship{
     char sprite[ROWS_STARSHIP][COLS_STARSHIP];
 } Ship;
 
-/* MACRO PER ALLY SHIP */
+/* MACRO PER LE SHIP */
 #define DEFAULT_X_ALLY_SHIP 2
 #define ESCAPE_CODE '\033'
 #define ASCII_CODE_A 65
 #define ASCII_CODE_B 66
+#define ASCII_CODE_SPACE_BAR 32
 #define PASSO 1
 #define Y_HSEPARATOR 4
 #define DIM_PIPE 2
@@ -27,6 +29,8 @@ typedef struct ship{
 #define ALLY_BORDER_SPACE 3
 #define BLANK_SPACE "      "
 #define BULLET '+'
+#define NUMBER_BULLETS 2
+#define BOMB '@'
 
 /* MACRO PER GESTIRE I PROCESSI */
 #define PROCESS_RETURN_FAILURE -1

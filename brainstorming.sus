@@ -1,5 +1,5 @@
 navicella nemica: 
-           \./ 
+           \./
            <x>
            /^\
 
@@ -9,7 +9,7 @@ navicella alleata:
           >|  |>
             \/
 
-amogus: ඩ (non funzionante, sadge)
+amogus: ඩ (Unicode: U+0D9E)
 
 comandi utili:
 gnome-terminal --geometry=widthxheight+Xposition+Yposition
@@ -28,11 +28,6 @@ TODO:
 - la procedura printStarship sarebbe meglio renderla generica, passi in input una variabile che identifica se vuoi stampare l'astronave alleata o la navicella
   nemica, e stampa lui, alla funzione che scrive nella pipe lasciamo che scriva solo le coordinate, richieste dalle specifiche
   in particolare cambiamo ship.sprite con una macro, define ally 1 define enemy 2, switch che in base a quale delle due stampa quella corretta.
-- implementare le funzioni isGameOver, checkCollision, bombController, bulletCOntroller, enemyShipController
+- implementare le funzioni isGameOver, checkCollision, bombController, bulletController, enemyShipController
 - fare flowchart del progetto
-- fare mountain bg
-- decidere ascii per bomba alleata e bomba nemica
-
-selector > 16 ascii
-cuore 3 ascii
-smile 2 ascii
+- fare mountain background

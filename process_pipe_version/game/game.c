@@ -56,17 +56,32 @@ void mountainsBgEffect(WINDOW* win, Point p){
  * @param pipeOut 
  */
 void allyShipController(WINDOW* win, Point p, int pipeOut){
+    pid_t bullets[NUMBER_BULLETS];
     int i;
     Ship ship;
     char sprite[ROWS_STARSHIP][COLS_STARSHIP] = STARSHIP;
     ship.pos.x = ALLY_BORDER_SPACE;
-    ship.pos.y = Y_HSEPARATOR +  divideByTwo(p.y - Y_HSEPARATOR);
+    ship.pos.y = Y_HSEPARATOR + divideByTwo(p.y - Y_HSEPARATOR);
     for(i = 0; i<ROWS_STARSHIP; i++){
         strcpy(ship.sprite[i], sprite[i]);
     }
     while (true) {
         write(pipeOut, &ship, sizeof(ship));
         moveAllyShip(win, p, &ship.pos.y);
+        if(wgetch(win) == ASCII_CODE_SPACE_BAR){
+            for(i = 0; i < NUMBER_BULLETS; i++){
+                switch(bullets[i] = fork()){
+                    case PROCESS_RETURN_FAILURE:
+                        printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
+                        break;
+                    case PROCESS_RETURN_CHILD_PID: 
+                        bulletController(win, p, pipeOut);
+                        break;
+                    default: //TODO: vedere come gestire il default del padre
+
+                }
+            }
+        }
     }
 }
 
@@ -85,7 +100,10 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut){
  * @param pipeOut 
  */
 void bulletController(WINDOW* win, Point p, int pipeOut){
-    
+    char bullet;
+    while(true){
+        //TODO gestire il proiettile
+    }   
 }
 
 /**
@@ -109,13 +127,26 @@ void printObjects (WINDOW* win, Point p, int pipeIn) {
         if(checkPos(p, ship.pos.y)){
             printStarShip(win, ship);
         }
+        //TODO Stampare il proiettile
+        usleep(10000);
         wrefresh(win);
     }
-    
 }
 
+/**
+ * @brief Lo scopo di questa procedura è quella di scrivere all'interno della pipe se 
+ * 
+ * @param win 
+ * @param p 
+ * @param pipeIn 
+ */
 void checkCollision (WINDOW* win, Point p, int pipeIn) {
-
+    Ship allyShip, genericShip;
+    bool isCollisionDetected = false;
+    bool allyShipWin = false, enemyShipWin = false;
+    do{
+        //GESTIRE COLLISIONE PROIETTILE
+    }while(!isCollisionDetected);
 }
 /**
  * @brief funzione che restituisce true se il gioco e' finito o meno 

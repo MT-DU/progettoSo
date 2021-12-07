@@ -45,9 +45,7 @@ void printMenu (WINDOW* win, Point max_res, int selection, int menu, int row, ch
     for(i=0;i<row;i++) {
         y = yDivided + SPACE_BETWEEN_CHOICES * selection;
         x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
-        
-        mvwaddch(win, y, x, amogus);
-        //mvwaddch(win, y, x, SELECTOR);
+        mvwaddch(win, y, x, SELECTOR);
         
         y = yDivided + SPACE_BETWEEN_CHOICES*i;
         x = xDivided - divideByTwo(strlen(vetStringsMenu[i]));
