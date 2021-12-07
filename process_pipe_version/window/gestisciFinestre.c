@@ -39,14 +39,16 @@ void printMenu (WINDOW* win, Point max_res, int selection, int menu, int row, ch
     for(i = 0; i < row; i++) { //blocco di codice per rimuovere i '>' dal menu
         y = yDivided + SPACE_BETWEEN_CHOICES * i;
         x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
-        mvwprintw(win, y, x, " ");
+        mvwaddch(win, y, x, ' ');
     }
 
     for(i=0;i<row;i++) {
         y = yDivided + SPACE_BETWEEN_CHOICES * selection;
         x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
-        mvwprintw(win, y, x, SELECTOR);
-
+        
+        mvwaddch(win, y, x, amogus);
+        //mvwaddch(win, y, x, SELECTOR);
+        
         y = yDivided + SPACE_BETWEEN_CHOICES*i;
         x = xDivided - divideByTwo(strlen(vetStringsMenu[i]));
         mvwprintw(win, y, x, vetStringsMenu[i]);

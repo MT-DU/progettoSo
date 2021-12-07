@@ -2,12 +2,16 @@
 #include "../errors/errors.h"
 #include <unistd.h>
 
-#define STARSHIP {'\n',' ',' ','/','\\','\n','>','|',' ',' ','|','>','\n',' ',' ','\\','/','\n','\n'}
-#define DIM_STARSHIP 50
+//#define STARSHIP {'\n',' ',' ','/','\\',' ',' ','\n','>','|','x',' ','|','>','\n',' ',' ','\\','/',' ',' ','\n'}
+#define STARSHIP {{"  /\\  "},{">|x |>"},{"  \\/  "}}
+
+#define ROWS_STARSHIP 3
+#define COLS_STARSHIP 6
+#define OUTER_STARSHIP 2
 
 typedef struct ship{
     Point pos;
-    char sprite[DIM_STARSHIP];
+    char sprite[ROWS_STARSHIP][COLS_STARSHIP];
 } Ship;
 
 /* MACRO PER ALLY SHIP */
@@ -19,8 +23,10 @@ typedef struct ship{
 #define Y_HSEPARATOR 4
 #define DIM_PIPE 2
 #define NUMBER_ENEMY_SHIPS 4
-#define Y_MAXPOS 47
-#define STARSHIP_SIZE 6
+#define STARSHIP_SIZE 3
+#define ALLY_BORDER_SPACE 3
+#define BLANK_SPACE "      "
+#define BULLET '+'
 
 /* MACRO PER GESTIRE I PROCESSI */
 #define PROCESS_RETURN_FAILURE -1
@@ -42,5 +48,5 @@ void checkCollision(WINDOW* win, Point p, int pipeIn);
 bool isGameOver(/*Pensare a cosa metterci*/);
 
 void printStarShip (WINDOW* win, Ship ship);
-int moveAllyShip (WINDOW* win, int* yPos);
-bool checkPos (int yPos);
+void moveAllyShip (WINDOW* win, Point p, int* yPos);
+bool checkPos (Point p, int yPos);

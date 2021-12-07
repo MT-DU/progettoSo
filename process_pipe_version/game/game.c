@@ -19,10 +19,13 @@ void mainGame(WINDOW* win, Point p){
         case PROCESS_RETURN_CHILD_PID:
             close(fileDes[PIPE_READ]);
             allyShipController(win, p, fileDes[PIPE_WRITE]);
+            usleep(100000);
             break;
         default:
             close(fileDes[PIPE_WRITE]);
+            usleep(1000);
             printObjects(win, p, fileDes[PIPE_READ]);
+            usleep(100000);
             break;
         }
     kill(allyShip, SIGTERM);
@@ -53,14 +56,17 @@ void mountainsBgEffect(WINDOW* win, Point p){
  * @param pipeOut 
  */
 void allyShipController(WINDOW* win, Point p, int pipeOut){
+    int i;
     Ship ship;
-    char sprite[DIM_STARSHIP] = STARSHIP;
-    ship.pos.x =10;
-    ship.pos.y = divideByTwo(p.y - Y_HSEPARATOR) + Y_HSEPARATOR;
-    strcpy(ship.sprite, sprite);
+    char sprite[ROWS_STARSHIP][COLS_STARSHIP] = STARSHIP;
+    ship.pos.x = ALLY_BORDER_SPACE;
+    ship.pos.y = Y_HSEPARATOR +  divideByTwo(p.y - Y_HSEPARATOR);
+    for(i = 0; i<ROWS_STARSHIP; i++){
+        strcpy(ship.sprite[i], sprite[i]);
+    }
     while (true) {
         write(pipeOut, &ship, sizeof(ship));
-        moveAllyShip(win, &ship.pos.y);
+        moveAllyShip(win, p, &ship.pos.y);
     }
 }
 
@@ -79,7 +85,7 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut){
  * @param pipeOut 
  */
 void bulletController(WINDOW* win, Point p, int pipeOut){
-
+    
 }
 
 /**
@@ -100,7 +106,7 @@ void printObjects (WINDOW* win, Point p, int pipeIn) {
     Ship ship;
     while (true) {
         read(pipeIn, &ship, sizeof(ship));
-        if(checkPos(ship.pos.y)){
+        if(checkPos(p, ship.pos.y)){
             printStarShip(win, ship);
         }
         wrefresh(win);
@@ -122,18 +128,27 @@ bool isGameOver (/*Pensare a cosa metterci*/){
 
 // sample of starship
 void printStarShip (WINDOW* win, Ship ship) {
-    mvwprintw(win, ship.pos.y, ship.pos.x, ship.sprite);
+    int i,j, y;
+
+    mvwprintw(win, ship.pos.y-OUTER_STARSHIP, ship.pos.x, BLANK_SPACE);
+    mvwprintw(win, ship.pos.y+OUTER_STARSHIP, ship.pos.x, BLANK_SPACE);
+
+    for(i=0;i<ROWS_STARSHIP;i++){
+        for(j=0;j<COLS_STARSHIP;j++){
+            y = ship.pos.y-divideByTwo(STARSHIP_SIZE) + i;
+            mvwaddch(win, y, ship.pos.x+j, ship.sprite[i][j]);
+        }
+    }
 }
 
-int moveAllyShip (WINDOW* win, int* yPos) {
+void moveAllyShip (WINDOW* win, Point p, int* yPos) {
     keypad(win, TRUE);
     cbreak();
     int arrow = wgetch(win);
-    keyPadSelector(win, Y_HSEPARATOR, Y_MAXPOS-STARSHIP_SIZE, arrow, yPos);
+    keyPadSelector(win, Y_HSEPARATOR+STARSHIP_SIZE, p.y-STARSHIP_SIZE, arrow, yPos);
     nocbreak();
-    return arrow;
 }
 
-bool checkPos (int yPos) {
-    return yPos > 0 && yPos < Y_MAXPOS-STARSHIP_SIZE;
+bool checkPos (Point p, int yPos) {
+    return yPos > 0 && yPos < p.y-STARSHIP_SIZE;
 }

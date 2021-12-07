@@ -9,11 +9,12 @@ typedef struct point{
 } Point;
 
 #define DIM_MAX_PRINT_MENU 30
-#define SELECTOR ">"
+#define SELECTOR '>'
 #define SPACE_BETWEEN_CHOICES 3
 #define CREATE_OFFSET_SPACES 3
 #define PAIR_COLOR_LOGO 1
 #define PAIR_COLOR_TEXT 2
+#define MIN_POS 0
 
 void keyPadSelector(WINDOW *win, int min_choice, int max_choice, int input, int* counter);
 int searchLongestString(int row, char vetStrings[row][DIM_MAX_PRINT_MENU]);
