@@ -10,27 +10,21 @@
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
 
-typedef struct ship{
+typedef struct{
     Point pos;
-    char sprite[ROWS_STARSHIP][COLS_STARSHIP];
-    int type;
+    pid_t pid;
+    int typeObject;
     int direction;
-} Ship;
-
-typedef struct bullet{
-    Point pos;
-    char c;
-    int type;
-    int direction;
-} Bullet;
+} Object;
 
 /* MACRO PER LE STRUTTURE */
-#define TYPE_ALLY 0
-#define TYPE_ENEMY 1
-
-#define SUPERIOR_BULLET 0
-#define INFERIOR_BULLET 1
-#define BOMB_BULLET 2
+#define ALLY_SHIP_TYPE 0
+#define ENEMY_SHIP_TYPE 1
+#define BIG_ENEMY_SHIP_TYPE 2
+#define BULLET_TYPE 3
+#define BOMB_TYPE 4
+#define UP_DIRECTION 0
+#define DOWN_DIRECTION 1
 
 /* MACRO PER LE SHIP */
 #define DEFAULT_X_ALLY_SHIP 2
@@ -47,9 +41,9 @@ typedef struct bullet{
 #define BLANK_SPACES "      "
 #define BLANK_SPACE ' '
 
-#define BULLET '+'
+#define BULLET_SPRITE '+'
 #define NUMBER_BULLETS 2
-#define BOMB '@'
+#define BOMB_SPRITE '@'
 
 /* MACRO PER GESTIRE I PROCESSI */
 #define PROCESS_RETURN_FAILURE -1
@@ -69,7 +63,7 @@ void bombController(WINDOW* win, Point p, int pipeOut);
 void printObjects(WINDOW* win, Point p, int pipeIn);
 void checkCollision(WINDOW* win, Point p, int pipeIn, int pipeOutPrint);
 bool isGameOver(/*Pensare a cosa metterci*/);
-void printStarShip (WINDOW* win, Ship ship);
-void moveAllyShip (WINDOW* win, Point p, int* yPos);
-void printBullet (WINDOW* win, Bullet bullet);
+void printStarShip (WINDOW* win, Object ship);
+void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
+void printBullet (WINDOW* win, Object bullet);
 bool checkPos (Point p, int yPos);
