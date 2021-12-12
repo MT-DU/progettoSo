@@ -10,21 +10,24 @@
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
 
+typedef enum{
+    ALLY_SHIP_TYPE,
+    ENEMY_SHIP_TYPE,
+    BIG_ENEMY_SHIP_TYPE,
+    BULLET_TYPE,
+    BOMB_TYPE
+} TypeObject;
+
+typedef enum{
+    UP_DIRECTION, DOWN_DIRECTION
+} Direction;
+
 typedef struct{
     Point pos;
     pid_t pid;
-    int typeObject;
-    int direction;
+    TypeObject typeObject;
+    Direction direction;
 } Object;
-
-/* MACRO PER LE STRUTTURE */
-#define ALLY_SHIP_TYPE 0
-#define ENEMY_SHIP_TYPE 1
-#define BIG_ENEMY_SHIP_TYPE 2
-#define BULLET_TYPE 3
-#define BOMB_TYPE 4
-#define UP_DIRECTION 0
-#define DOWN_DIRECTION 1
 
 /* MACRO PER LE SHIP */
 #define DEFAULT_X_ALLY_SHIP 2
@@ -58,7 +61,7 @@ void hudGame(WINDOW* win, Point p);
 void mountainsBgEffect(WINDOW* win, Point p);
 void allyShipController(WINDOW* win, Point p, int pipeOut);
 void enemyShipController(WINDOW* win, Point p, int pipeOut);
-void bulletController(WINDOW* win, Point p, Point posShip, int direction, int pipeOut);
+void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut, int* nBulletsActive);
 void bombController(WINDOW* win, Point p, int pipeOut);
 void printObjects(WINDOW* win, Point p, int pipeIn);
 void checkCollision(WINDOW* win, Point p, int pipeIn, int pipeOutPrint);
