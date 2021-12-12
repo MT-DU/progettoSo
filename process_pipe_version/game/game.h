@@ -10,6 +10,9 @@
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
 
+#define MOUNTAINS_ROWS 8
+#define MOUNTAINS_COLS 21
+
 typedef enum{
     ALLY_SHIP_TYPE,
     ENEMY_SHIP_TYPE,

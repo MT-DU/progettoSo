@@ -57,6 +57,7 @@ void mainGame(WINDOW* win, Point p){
  */
 void hudGame(WINDOW* win, Point p){
 
+    
 }
 /**
  * @brief procedura che permette di dare un effetto grafico nello sfondo
@@ -65,6 +66,43 @@ void hudGame(WINDOW* win, Point p){
  * @param p 
  */
 void mountainsBgEffect(WINDOW* win, Point p){
+
+    int x = 0, y = getmaxy(win)-MOUNTAINS_ROWS, i = -1, j = 0, k;
+
+    char mountains[MOUNTAINS_ROWS][MOUNTAINS_COLS]={
+    {"        /\\    *      "},
+    {"       /**\\       *  "},
+    {"   *  /****\\         "},
+    {"     /*/\\***\\        "},
+    {"    / /**\\   \\  /\\   "},
+    {"   / /    \\   \\/YY\\  "},
+    {" /\\ /YYYYYY\\   \\YYY\\ "},
+    {"/  \\YYYYYYYY\\YYY\\YYY\\"}};
+
+    while(true){
+        
+        if(x > getmaxx(win)-10){
+            for(k=0;k<MOUNTAINS_ROWS;k++){
+                move(y+k,1);
+                delch();
+            }
+        }
+        
+        
+        if(i == MOUNTAINS_COLS-1){
+            i=0;
+        } else {
+            i++;
+        }
+
+        
+        for(j=0;j<MOUNTAINS_ROWS;j++){
+            mvaddch(y+j, x, mountains[j][i]);
+        }
+
+        usleep(200000);
+    }
+    x++;
 
 }
 
@@ -95,24 +133,19 @@ void allyShipController(WINDOW* win, Point p, int pipeOut){
                 case PROCESS_RETURN_FAILURE:
                     printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
                     break;
-                case PROCESS_RETURN_CHILD_PID: 
+                case PROCESS_RETURN_CHILD_PID:
                     bulletController(win, p, ship.pos, UP_DIRECTION, pipeOut, &nBulletsActive);
-                    //TODO aggiungere alla funzione bullet il pid in modo da poterlo ammazzare con le collisioni
                     break;
                 default:
                     switch(bullets[DOWN_DIRECTION] = fork()){
                         case PROCESS_RETURN_FAILURE:
                             printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
                             break;
-                        case PROCESS_RETURN_CHILD_PID: 
+                        case PROCESS_RETURN_CHILD_PID:
                             bulletController(win, p, ship.pos, DOWN_DIRECTION, pipeOut, &nBulletsActive);
-                            //TODO aggiungere alla funzione bullet il pid in modo da poterlo ammazzare con le collisioni
                             break;
                         default:
-                            
-                            //isBulletShot = true;
-                            //write(pipeOut, &isBulletShot, sizeof(bool));
-                            //write(pipeOut, &bullets[i], sizeof(pid_t));
+                           break;
                     }
             }
         }
@@ -159,13 +192,13 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
                 bullet.pos.y--;
             }
         }
-        usleep(100000);
         write(pipeOut, &bullet, sizeof(Object));
+        usleep(1000000);
     }
-    (*nBulletsActive)--;
-    mvwprintw(win, 0, 0, "%d", *nBulletsActive);
-    wrefresh(win);
-    kill(getpid(), SIGQUIT);
+    char str[10];
+    sprintf(str, "proiettili attivi: %d", *nBulletsActive);
+    perror(str);
+    kill(getpid(), SIGUSR1);
 }
 
 /**
@@ -206,8 +239,9 @@ void printObjects (WINDOW* win, Point p, int pipeIn) {
                     printBullet(win, obj);
                     break;
             }
-            wrefresh(win);
-        } 
+        }
+        //mountainsBgEffect(win, p);
+        wrefresh(win);
     }
 }
 
