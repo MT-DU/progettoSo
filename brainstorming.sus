@@ -16,13 +16,20 @@ gnome-terminal --geometry=widthxheight+Xposition+Yposition
 resize -s <rows> <columns>
 
 IDEE:
-- Strutturare il gioco avendo 2+ livelli, in cui cambia l'hud del livello
-- Mettere un boss alla fine del livello finale
+- Strutturare il gioco avendo 3 livelli, in cui cambia l'hud del livello, al 3° livello dopo i nemici classici spawna un boss
 - Creare un hud che dica il numero di vite, nemici rimanenti, timer della partita, creare paesaggio che dia senso di movimento
-- Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof 
-- I nemici dei livelli successivi usano bombe più grandi o sono più veloci
+- Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof )
+- I nemici dei livelli successivi (solo del 3°) usano bombe più grandi o sono più veloci
 - Ogni volta che superi un livello recuperi una vita nelle difficoltà più alte
 - Aggingere voce High score nel menù principale
+- implementare ridimensionamento schermo dalle impostazioni
+- implementare mini istruzioni di tutorial per come funziona il gioco
+- implementare menù di pausa dentro al game (wait dei processi)
 
 TODO:
-- implementare le funzioni isGameOver, checkCollision, bombController, bulletController, enemyShipController
+- Creare vettore di pipe per gestire le navicelle nemiche. Questo vettore di pipe dev'essere passato in scrittura ad ogni navicella nemica (alieno)
+  e in lettura al check collision
+- Creare una pipe che gestisce il numero di processi attivi, quando checkCollision leggerà, terrà quest'informazione in locale salvando dentro delle variabili
+  (creare struttura ad hoc). Il vettore di pipe dev'essere inizializzato prima di tutte le fork nel main
+- appena checkCollision funziona dobbiamo levare la gestione del rimbalzo del bullet, nelle specifiche dice che ogni collisione o quando un oggetto esce dallo schermo
+  deve essere gestito dal processo checkCollision, ciò implica che dobbiamo mettere la read e la write in ogni funzione, anche quelle figlie generatrici di oggetti.

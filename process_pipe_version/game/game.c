@@ -7,9 +7,11 @@
  * @param p 
  */
 void mainGame(WINDOW* win, Point p){
+    srand(time(NULL));
     pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS], allyShip, printObject;
     int fileDes[DIM_PIPE];
     int fileDesPrint[DIM_PIPE];
+    int i;
     if(pipe(fileDes) == PROCESS_RETURN_FAILURE) {
         printExceptions(TYPE_EXCEPTION_PIPE_CREATION_FAILURE);
     }
@@ -27,23 +29,37 @@ void mainGame(WINDOW* win, Point p){
             allyShipController(win, p, fileDes[PIPE_WRITE]);
             break;
         default:
-            switch (printObject = fork()) {
-            case PROCESS_RETURN_FAILURE:
-                printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
-                break;
-            case PROCESS_RETURN_CHILD_PID: //processo figlio che gestisce la stampa
-                close(fileDes[PIPE_WRITE]);
-                close(fileDes[PIPE_READ]);
-                close(fileDesPrint[PIPE_WRITE]);
-                printObjects(win, p, fileDesPrint[PIPE_READ]);
-                break;
-            default: // padre
-                close(fileDes[PIPE_WRITE]);
-                close(fileDesPrint[PIPE_READ]);
-                checkCollision(win, p, fileDes[PIPE_READ], fileDesPrint[PIPE_WRITE]);
-                wait(0);
-                break;
+            for(i = 0; i < NUMBER_ENEMY_SHIPS; i++){ //cicla finchè non genera tutti gli alieni
+                switch (pidEnemyShips[i] = fork()) { //creazione processi alieni
+                case PROCESS_RETURN_FAILURE:
+                    printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
+                    break;
+                case PROCESS_RETURN_CHILD_PID: //processo figlio che gestisce l'alieno
+                    close(fileDesPrint[PIPE_WRITE]);
+                    close(fileDesPrint[PIPE_READ]);
+                    close(fileDes[PIPE_READ]);
+                    enemyShipController(win, p, fileDes[PIPE_WRITE], i);
+                    break;
+                }
             }
+            perror("Ho creato gli alieni");
+            switch (printObject = fork()) {
+                case PROCESS_RETURN_FAILURE:
+                    printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
+                    break;
+                case PROCESS_RETURN_CHILD_PID: //processo figlio che gestisce la stampa
+                    close(fileDes[PIPE_WRITE]);
+                    close(fileDes[PIPE_READ]);
+                    close(fileDesPrint[PIPE_WRITE]);
+                    printObjects(win, p, fileDesPrint[PIPE_READ]);
+                    break;
+                default: // padre
+                    close(fileDes[PIPE_WRITE]);
+                    close(fileDesPrint[PIPE_READ]);
+                    checkCollision(win, p, fileDes[PIPE_READ], fileDesPrint[PIPE_WRITE]);
+                    wait(0);
+                    break;
+                }
         }
     kill(allyShip, SIGTERM);
     kill(printObject, SIGTERM);
@@ -99,11 +115,9 @@ void mountainsBgEffect(WINDOW* win, Point p){
         for(j=0;j<MOUNTAINS_ROWS;j++){
             mvaddch(y+j, x, mountains[j][i]);
         }
-
         usleep(200000);
     }
     x++;
-
 }
 
 /**
@@ -114,19 +128,19 @@ void mountainsBgEffect(WINDOW* win, Point p){
 void allyShipController(WINDOW* win, Point p, int pipeOut){
     pid_t bullets[NUMBER_BULLETS];
     int i = 0;
-    Object ship; //WARNING il pid della struttura ship non e' inizializzato
+    Object ship;
     ship.pos.x = ALLY_BORDER_SPACE;
     ship.pos.y = Y_HSEPARATOR + divideByTwo(p.y - Y_HSEPARATOR);
     ship.typeObject = ALLY_SHIP_TYPE;
     ship.direction = 0;
-    ship.pid = PROCESS_RETURN_CHILD_PID;
+    ship.pid = getpid();
     int nBulletsActive = 0;
-    int isBulletShot = false; //TODO da fixare la condizione
+    int isBulletShot = false;
 
     while (true) {
         write(pipeOut, &ship, sizeof(Object));
         moveAllyShip(win, p, &ship.pos.y, &isBulletShot);
-        if(isBulletShot && nBulletsActive < 5){
+        if(isBulletShot && nBulletsActive < MAX_BULLETS_ACTIVE){
             isBulletShot = false;
             nBulletsActive++;
             switch(bullets[UP_DIRECTION] = fork()){
@@ -155,10 +169,49 @@ void allyShipController(WINDOW* win, Point p, int pipeOut){
 /**
  * @brief Procedura che gestisce la creazione e lo spostamento della navicella nemica
  * 
- * @param pipeOut 
+ * @param win finestra
+ * @param p struttura per risoluzione
+ * @param pipeOut pipe di scrittura
+ * @param idNumber il famoso M delle specifiche
  */
-void enemyShipController(WINDOW* win, Point p, int pipeOut){
+void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber){
+    pid_t bomb;
+    int i = 0;
+    Object alien;
+    alien.pos.x = p.x - ALLY_BORDER_SPACE;
+    alien.pos.y = (p.y / NUMBER_ENEMY_SHIPS+1) * idNumber;
+    alien.typeObject = ENEMY_SHIP_TYPE;
+    alien.direction = 0;
+    alien.pid = getpid();
+    int timer = 1; // ogni 3 movimenti della nave viene sparata una bomba
+    int direction = 0;
 
+    while(true){
+        write(pipeOut, &alien, sizeof(Object));
+        direction = MIN_RAND + rand()%(MAX_RAND-MIN_RAND+1);
+        alien.direction = direction%2 ? UP_DIRECTION : DOWN_DIRECTION;
+        Point bombPos;
+        bombPos.x = alien.pos.x;
+        bombPos.y = alien.pos.y;
+        timer++;
+
+        alien.pos.y = alien.direction == UP_DIRECTION ? alien.pos.y-1 : alien.pos.y+1;
+        //se collide con qualcosa (bordo o navicella) alien.pos.x--
+        /*
+        if(timer%3 == 0){
+            switch (bomb = fork()) {
+                case PROCESS_RETURN_FAILURE:
+                    printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
+                    break;
+                case PROCESS_RETURN_CHILD_PID:
+                    bombController(win,p,bombPos,pipeOut);
+                default:
+                    perror("padre della bomba ke cade");
+                    // e che cazzo deve fare il padre?
+                    break;
+            }
+        }*/
+    }
 }
 
 /**
@@ -177,23 +230,25 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
         case UP_DIRECTION:
             if(checkPos(p, bullet.pos.y)){
                 bullet.pos.y--;
-                bullet.pos.x++;
+                bullet.pos.x += BULLET_PACE;
             } else {
                 bullet.direction = DOWN_DIRECTION;
                 bullet.pos.y++;
+                bullet.pos.x += BULLET_PACE;
             }
             break;
         case DOWN_DIRECTION:
             if(checkPos(p, bullet.pos.y)){
                 bullet.pos.y++;
-                bullet.pos.x++;
+                bullet.pos.x += BULLET_PACE;
             } else {
                 bullet.direction = UP_DIRECTION;
                 bullet.pos.y--;
+                bullet.pos.x += BULLET_PACE;
             }
         }
         write(pipeOut, &bullet, sizeof(Object));
-        usleep(1000000);
+        usleep(200000);
     }
     char str[10];
     sprintf(str, "proiettili attivi: %d", *nBulletsActive);
@@ -206,8 +261,20 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
  * 
  * @param pipeOut 
  */
-void bombController(WINDOW* win, Point p, int pipeOut){
+void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut){
+    Object bomb;
+    bomb.pos.x = posAlien.x-1;
+    bomb.pos.y = posAlien.y;
+    bomb.typeObject = BOMB_TYPE;
+    bomb.direction = 0;
 
+    while(bomb.pos.x > 9){
+        bomb.pos.x--;
+        write(pipeOut,&bomb,sizeof(Object));
+        usleep(200000);
+    }
+    perror("bomba smarties ke cade");
+    kill(getpid(), SIGUSR2);
 }
 
 /**
@@ -307,7 +374,7 @@ void printBullet (WINDOW* win, Object bullet) {
     switch (bullet.typeObject) {
         case BULLET_TYPE:
             y = bullet.direction == UP_DIRECTION ? bullet.pos.y + 1 : bullet.pos.y - 1;
-            x = bullet.pos.x - 1; 
+            x = bullet.pos.x - BULLET_PACE; 
             mvwaddch(win, y, x, BLANK_SPACE);
             mvwaddch(win, bullet.pos.y, bullet.pos.x, BULLET_SPRITE);
             break;
@@ -318,7 +385,6 @@ void printBullet (WINDOW* win, Object bullet) {
             mvwaddch(win, bullet.pos.y, bullet.pos.x, BOMB_SPRITE);
             break;
     }
-    
 }
     
 
