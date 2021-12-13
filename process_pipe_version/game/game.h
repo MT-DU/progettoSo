@@ -3,14 +3,20 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <time.h>
+#include <fcntl.h>
 
 //#define STARSHIP {'\n',' ',' ','/','\\',' ',' ','\n','>','|','x',' ','|','>','\n',' ',' ','\\','/',' ',' ','\n'}
 #define STARSHIP {{"  /\\  "},{">|x |>"},{"  \\/  "}}
-#define ENEMYSHIP {{"\\./   "},{"<x>   "},{"/^\\   "}}
+#define ENEMYSHIP {{"\\./"},{"<x>"},{"/^\\"}}
 
 #define ROWS_STARSHIP 3
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
+
+#define ROWS_ALIEN 3
+#define COLS_ALIEN 3
+#define OUTER_ALIEN 1
+#define ALIEN_SIZE 3
 
 #define MOUNTAINS_ROWS 8
 #define MOUNTAINS_COLS 21
@@ -46,10 +52,11 @@ typedef struct{
 #define PASSO 1
 #define Y_HSEPARATOR 4
 #define DIM_PIPE 2
-#define NUMBER_ENEMY_SHIPS 4
+#define NUMBER_ENEMY_SHIPS 2
 #define STARSHIP_SIZE 3
 #define ALLY_BORDER_SPACE 3
-#define BLANK_SPACES "      "
+#define BLANK_SPACES_STARSHIP "      "
+#define BLANK_SPACES_ALIEN "   "
 #define BLANK_SPACE ' '
 
 #define BULLET_SPRITE '+'
@@ -75,7 +82,7 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber);
 void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut, int* nBulletsActive);
 void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut);
 void printObjects(WINDOW* win, Point p, int pipeIn);
-void checkCollision(WINDOW* win, Point p, int pipeIn, int pipeOutPrint);
+void checkCollision (WINDOW* win, Point p, int pipeIn, int pipeOutPrint, int pipeInAliens[NUMBER_ENEMY_SHIPS][DIM_PIPE]);
 bool isGameOver(/*Pensare a cosa metterci*/);
 void printStarShip (WINDOW* win, Object ship);
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
