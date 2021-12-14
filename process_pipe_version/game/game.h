@@ -12,6 +12,7 @@
 #define ROWS_STARSHIP 3
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
+#define STARSHIP_SIZE 3
 
 #define ROWS_ALIEN 3
 #define COLS_ALIEN 3
@@ -53,10 +54,9 @@ typedef struct{
 #define Y_HSEPARATOR 4
 #define DIM_PIPE 2
 #define NUMBER_ENEMY_SHIPS 2
-#define STARSHIP_SIZE 3
 #define ALLY_BORDER_SPACE 3
 #define BLANK_SPACES_STARSHIP "      "
-#define BLANK_SPACES_ALIEN "   "
+#define BLANK_SPACES_ALIEN "    "
 #define BLANK_SPACE ' '
 
 #define BULLET_SPRITE '+'
@@ -87,4 +87,4 @@ bool isGameOver(/*Pensare a cosa metterci*/);
 void printStarShip (WINDOW* win, Object ship);
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
 void printBullet (WINDOW* win, Object bullet);
-bool checkPos (Point p, int yPos);
+bool checkPos (Point p, int yPos, int size);
