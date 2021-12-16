@@ -214,7 +214,7 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
     while(p.x >= bullet.pos.x){
         switch (bullet.direction) { 
             case UP_DIRECTION:
-                if(checkPos(p, bullet.pos.y, sizeof(BULLET_SPRITE))){
+                if(checkPos(p, bullet.pos.y, 1)){
                     bullet.pos.y--;
                     bullet.pos.x += BULLET_PACE;
                 } else {
@@ -224,7 +224,7 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
                 }
                 break;
             case DOWN_DIRECTION:
-                if(checkPos(p, bullet.pos.y, sizeof(BULLET_SPRITE))){
+                if(checkPos(p, bullet.pos.y, 1)){
                     bullet.pos.y++;
                     bullet.pos.x += BULLET_PACE;
                 } else {
@@ -281,8 +281,8 @@ void printObjects (WINDOW* win, Point p, int pipeIn, int pipeAliens[NUMBER_ENEMY
                     printStarShip(win, allyShip);
                     break;
                 case BULLET_TYPE:
-                    addObject(bullets, MAX_BULLETS_ACTIVE, obj);
-                    catchZombies(bullets, MAX_BULLETS_ACTIVE, obj.pid);
+                    //addObject(bullets, MAX_BULLETS_ACTIVE, obj);
+                    //catchZombies(bullets, MAX_BULLETS_ACTIVE, obj.pid);
                     printBullet(win, obj);
                     break;
             }      
@@ -318,29 +318,46 @@ void printObjects (WINDOW* win, Point p, int pipeIn, int pipeAliens[NUMBER_ENEMY
 
 void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size){
     int i;
-    Point genericPos;
     bool collisionCheck = false;
     TypeObject arrayType = array[0].typeObject;
+    
     switch(obj->typeObject){
         case ALLY_SHIP_TYPE:
-            genericPos.x = obj->pos.x + STARSHIP_SIZE;
-            genericPos.y = obj->pos.y;
-            if(arrayType == BOMB_TYPE){
-                for(i = 0; i<size; i++){
-                    if(checkHitboxAlly(genericPos, array->pos)){
-                        obj->health--;
-                        kill(getpid(), SIGINT);
+            switch(arrayType){
+                case BOMB_TYPE:
+                    for(i = 0; i<size; i++){
+                        if(checkAllyBombCollision(obj->pos, array->pos)){
+                            obj->health--;
+                            kill(getpid(), SIGINT);
+                        }
                     }
-
-                }
+                    break;
+                case ENEMY_SHIP_TYPE:
+                    for(i = 0; i<size; i++){
+                        if(checkAllyAlienCollision(obj->pos, array->pos)){
+                            // entrambi perdono una vita
+                        }
+                    }
+                    break;
+                default:
+                    perror("object colliding with ship is neither a bomb nor an alien");
             }
-            
             break;
         case ENEMY_SHIP_TYPE:
             switch(arrayType){
                 case BULLET_TYPE:
+                    for(i=0;i<size;i++){
+                        if(checkAlienBulletCollision(obj->pos, array[i].pos)){
+                            // uccidi bullet e decrementa vita alien di 1
+                        }
+                    }
                     break;
                 case ENEMY_SHIP_TYPE:
+                    for(i=0;i<size;i++){
+                        if(checkAlienAlienCollision(obj->pos, array[i].pos)){
+                            // cambia direction delle due alien
+                        }
+                    }
                     break;
                 default:
                     perror("object colliding with alien is neither a bullet nor an alien");
@@ -350,7 +367,7 @@ void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size
         case BULLET_TYPE:
             if(arrayType == BOMB_TYPE) {
                 for(i=0;i<size;i++) {
-                    if(checkBulletCollision(obj->pos,array[i].pos)){
+                    if(checkBulletBombCollision(obj->pos,array[i].pos)){
                         // uccidi entrambi i processi bullet e bomb
                     }
                 }
@@ -360,6 +377,35 @@ void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size
             break;
         default:
             perror("wrong object type in checkCollision");
+    }
+}
+
+void checkWindowCollision(WINDOW* win, Point p, Object* obj){
+    
+    switch(obj->typeObject){
+        case ENEMY_SHIP_TYPE:
+            if(checkObjOutOfScreenLeft(obj->pos, ALIEN_SIZE)){
+                // player perde una vita
+            } else {
+                if(checkObjOutOfScreenUpDown(p, obj->pos, ALIEN_SIZE)){
+                    // fai rimbalzare (operatore ternario waiting room)
+                }
+            }
+            break;
+        case BULLET_TYPE:
+            if(checkObjOutOfScreenRight(p, obj->pos, ALIEN_SIZE)){
+                // processo missile muore
+            } else {
+                if(checkObjOutOfScreenUpDown(p, obj->pos, ALIEN_SIZE)){
+                    // fai rimbalzare (operatore ternario waiting room again)
+                }
+            }
+            break;
+        case BOMB_TYPE:
+            if(checkObjOutOfScreenLeft(obj->pos, ALIEN_SIZE)){
+                // processo bomba muore 
+            }
+            break;
     }
 }
 
@@ -444,5 +490,5 @@ void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot) {
 }
 
 bool checkPos (Point p, int yPos, int size) {
-    return yPos > Y_HSEPARATOR+(size+1) && yPos < p.y-size;
+    return yPos > Y_HSEPARATOR+size && yPos < p.y-size;
 }

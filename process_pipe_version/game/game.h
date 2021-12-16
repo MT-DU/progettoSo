@@ -42,3 +42,4 @@ void printStarShip (WINDOW* win, Object ship);
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
 void printBullet (WINDOW* win, Object bullet);
 bool checkPos (Point p, int yPos, int size);
+void checkWindowCollision(WINDOW* win, Point p, Object* obj);

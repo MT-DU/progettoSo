@@ -66,7 +66,16 @@ bool addObject (Object array[], int size, Object newObj);
 bool removeObject (Object array[], int size, pid_t pidObj);
 void catchZombies(Object array[], int size, pid_t pidObj);
 bool positionEquals(Point pos1, Point pos2);
-bool checkBulletCollision (Point pos1, Point pos2);
-bool checkHitboxAlly(Point pos1, Point pos2);
-bool checkBulletCollision (Point pos1, Point pos2);
+
+bool checkBulletBombCollision (Point pos1, Point pos2);
+bool checkAllyBombCollision(Point pos1, Point pos2);
+bool checkBulletBombCollision (Point pos1, Point pos2);
 bool checkAlienBulletCollision (Point pos1, Point pos2);
+bool checkAlienAlienCollision (Point pos1, Point pos2);
+bool checkAllyAlienCollision (Point pos1, Point pos2);
+
+bool checkObjOutOfScreenLeft (Point pos, int spriteSize);
+bool checkObjOutOfScreenRight (Point res, Point pos, int spriteSize);
+bool checkObjOutOfScreenUpDown (Point res, Point pos, int spriteSize);
+
+
