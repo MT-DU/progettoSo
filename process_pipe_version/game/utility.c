@@ -28,20 +28,62 @@ void changeDirection(Status status, Direction* direction){
     }
 }
 
-void entityArrayInitializer (Object array[ENTITY_TYPES][MAX_ENTITY_ACTIVE+1]) {
-    
-    int i, j = 0;
-    for(i=0;i<ENTITY_TYPES;i++){
-        array[i][j].nEntities = 0;
+void objectArrayInitializer (Object array[], int size) {
+    int i;
+    for(i=0;i<size;i++){
+        array[i].pid = UNDEFINED_PID;
     }
 }
-void addEntity (Object array[ENTITY_TYPES][MAX_ENTITY_ACTIVE+1], Object newObj) {
-    int i, j = 0;
-    for(j=0;j<MAX_ENTITY_ACTIVE+1;j++){
-        if((array[newObj.typeObject][j].nEntities == 0) && (j-1 >= 0)){  //incremento nEntities prendendo il numero progressivo dell'oggetto precedente
-            array[newObj.typeObject][j].nEntities = array[newObj.typeObject][j-1].nEntities + 1;
-        }else{  //se j-1 e' negativo, incremento nEntities di 1 (primo oggetto nella riga)
-            array[newObj.typeObject][j].nEntities++;
+
+bool addObject (Object array[], int size, Object newObj) {
+    int i;
+    if(array[size-1].pid==UNDEFINED_PID){ //se size-1 e' 0 allora non e' pieno
+        for(i=0;i<size;i++){
+            if(array[i].pid == UNDEFINED_PID){  //incremento nEntities prendendo il numero progressivo dell'oggetto precedente
+                array[i] = newObj;
+            }
+        }
+    }else{
+        return false;
+    }
+    return true;
+}
+
+bool removeObject (Object array[], int size, pid_t pidObj) {
+    int i, j;
+    for(i=0;i<size;i++){
+        if(array[i].pid == pidObj){  //incremento nEntities prendendo il numero progressivo dell'oggetto precedente
+            for(j = i; j<size-1; j++){
+                array[j] = array[j+1];
+            }
+            return true;
         }
     }
+    return false;
+}
+
+void catchZombies(Object array[], int size, pid_t pidObj){
+    int i, status;
+    for(i = 0; i<size; i++){
+        waitpid(pidObj, &status, WNOHANG);
+        if(WIFEXITED(status)){
+            removeObject(array, size, pidObj);
+        }
+    }
+}
+
+bool positionEquals(Point pos1, Point pos2){
+    return pos1.y == pos2.y && pos1.x == pos2.x;
+}
+
+bool checkHitboxAlly(Point pos1, Point pos2){
+    return (pos1.y-1 == pos2.y || pos1.y+1 == pos2.y || pos1.y==pos2.y) && (pos1.x == pos2.x);
+}
+
+bool checkBulletCollision (Point pos1, Point pos2){
+    return (pos1.x == pos2.x  || pos1.x == pos2.x+1) && pos1.y == pos2.y;
+}
+
+bool checkAlienBulletCollision (Point pos1, Point pos2){
+    return false; 
 }

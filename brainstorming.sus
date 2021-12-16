@@ -5,9 +5,9 @@ navicella nemica:
 
 navicella alleata:
 
-            /\  
+            /\ /
           >|x |>
-            \/
+            \/ \
 
 amogus: ඩ (Unicode: U+0D9E)
 
@@ -33,3 +33,29 @@ TODO:
   (creare struttura ad hoc). Il vettore di pipe dev'essere inizializzato prima di tutte le fork nel main
 - appena checkCollision funziona dobbiamo levare la gestione del rimbalzo del bullet, nelle specifiche dice che ogni collisione o quando un oggetto esce dallo schermo
   deve essere gestito dal processo checkCollision, ciò implica che dobbiamo mettere la read e la write in ogni funzione, anche quelle figlie generatrici di oggetti.
+
+COLLISIONI:
+- ALLY    ->  ENEMY         (entrambi perdono una vita)
+              BOMB          (ally perde una vita e muore processo bomba)
+
+- ENEMY   ->  BULLET        (enemy perde una vita e muore processo bullet)
+              MURO_UP&DOWN  (rimbalzo)
+              MURO_SX       (ally perde una vita)
+              ENEMY         (rimbalzano entrambi)
+
+- BULLET  ->  MURO_UP&DOWN  (rimbalzo)
+              BOMB          (entrambi i processi muoiono)
+              MURO_DX       (muore processo)
+
+- BOMB    ->  MURO_SX       (muore processo)
+
+
+
+clipboard:
+
+Object allyShip, aliens[NUMBER_ENEMY_SHIPS], obj;
+  pid_t bullets[NUMBER_BULLETS] = {PROCESS_RETURN_CHILD_PID};
+  int i, pipeInAlien;
+  Status status;
+  Object entitiesActive[ENTITY_TYPES][MAX_ENTITY_ACTIVE+1];
+  //entityArrayInitializer(entitiesActive);

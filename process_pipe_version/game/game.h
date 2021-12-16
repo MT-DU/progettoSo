@@ -1,24 +1,8 @@
 #include "utility.h"
 
 //#define STARSHIP {'\n',' ',' ','/','\\',' ',' ','\n','>','|','x',' ','|','>','\n',' ',' ','\\','/',' ',' ','\n'}
-#define STARSHIP {{"  /\\  "},{">|x |>"},{"  \\/  "}}
+#define STARSHIP {{"  /\\ /"},{">|x |>"},{"  \\/ \\"}}
 #define ENEMYSHIP {{"\\./"},{"<x>"},{"/^\\"}}
-
-#define ROWS_STARSHIP 3
-#define COLS_STARSHIP 6
-#define OUTER_STARSHIP 2
-#define STARSHIP_SIZE 3
-
-#define ROWS_ALIEN 3
-#define COLS_ALIEN 3
-#define OUTER_ALIEN 1
-#define ALIEN_SIZE 3
-
-#define MOUNTAINS_ROWS 8
-#define MOUNTAINS_COLS 21
-
-#define MIN_RAND 0
-#define MAX_RAND 100
 
 /* MACRO PER LE SHIP */
 #define DEFAULT_X_ALLY_SHIP 2
@@ -39,17 +23,20 @@
 #define NUMBER_BULLETS 2
 #define BOMB_SPRITE '@'
 #define BULLET_PACE 4
-#define MAX_ALIENS_FOR_ROW 5
+#define MAX_ALIENS_FOR_ROW 4
+#define MAX_BULLETS_ACTIVE 10
+#define MAX_BOMBS_ACTIVE 10
 
 void mainGame(WINDOW* win, Point p);
 void hudGame(WINDOW* win, Point p);
 void mountainsBgEffect(WINDOW* win, Point p);
-void allyShipController(WINDOW* win, Point p, int pipeOut);
+void allyShipController(WINDOW* win, Point p, int pipeOut, int pipeInObjActive[DIM_PIPE]);
 void enemyShipController(WINDOW* win, Point p, int pipeOut, int pipeInStatus, int idNumber);
-void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut, int* nBulletsActive);
+void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut);
 void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut);
-void printObjects(WINDOW* win, Point p, int pipeIn);
-void checkCollision (WINDOW* win, Point p, int pipeIn, int pipeOutPrint, int pipeInAliens[NUMBER_ENEMY_SHIPS][DIM_PIPE], int pipeOutObjectsActive);
+void printObjects (WINDOW* win, Point p, int pipeIn, int pipeAliens[NUMBER_ENEMY_SHIPS][DIM_PIPE], int fileDesBulletsActive[DIM_PIPE]);
+void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size);
+bool removeObject (Object array[], int size, pid_t pidObj);
 bool isGameOver(/*Pensare a cosa metterci*/);
 void printStarShip (WINDOW* win, Object ship);
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
