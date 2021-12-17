@@ -270,41 +270,70 @@ void printObjects (WINDOW* win, Point p, int pipeIn, int pipeAliens[NUMBER_ENEMY
     Object allyShip, aliens[NUMBER_ENEMY_SHIPS], obj;
     Object bullets[MAX_BULLETS_ACTIVE], bomb[MAX_BOMBS_ACTIVE];
     objectArrayInitializer(bullets, MAX_BULLETS_ACTIVE);
+    objectArrayInitializer(bomb, MAX_BOMBS_ACTIVE);
+    objectArrayInitializer(aliens, NUMBER_ENEMY_SHIPS);
+    Status statoCollisione;
     int status;
     int i, contBulletsActive = 0; 
     while (true) {
-        if(read(pipeIn, &obj, sizeof(Object)) > 0) {
-            checkCollision(win, p, &obj, bomb, MAX_BOMBS_ACTIVE);
+
+        if(read(pipeIn, &obj, sizeof(Object)) > 0) { //lettura dalla pipe della navicella alleata
             switch(obj.typeObject){
                 case ALLY_SHIP_TYPE:
                     allyShip = obj;
-                    printStarShip(win, allyShip);
+                    //printStarShip(win, allyShip);
                     break;
                 case BULLET_TYPE:
-                    //addObject(bullets, MAX_BULLETS_ACTIVE, obj);
+                    addObject(bullets, MAX_BULLETS_ACTIVE, obj);
+                    contBulletsActive++;
                     //catchZombies(bullets, MAX_BULLETS_ACTIVE, obj.pid);
-                    printBullet(win, obj);
+                   // printBullet(win, obj);
                     break;
             }      
         }
-        for(i = 0; i<NUMBER_ENEMY_SHIPS; i++){  //ciclo tutte le pipe
+        statoCollisione = checkCollision(win, p, &allyShip, bomb, MAX_BOMBS_ACTIVE);
+        switch (statoCollisione.collision) {
+            case NO_COLLISION:
+                printStarShip(win, allyShip);
+                break;
+            case LOSE_HEART_COLLISION:
+                allyShip.health--;
+                break;
+            case DEATH_COLLISION:
+                _exit(SIGINT);
+                break;
+        }
+        for(i = 0; i<NUMBER_ENEMY_SHIPS; i++){  //ciclo tutte le pipe degli alieni
             if(read(pipeAliens[i][PIPE_READ], &obj, sizeof(Object)) > 0){   
-                aliens[i] = obj;
-                switch(aliens[i].typeObject){  //switch del type object per la stampa
+                
+                switch(obj.typeObject){  //switch del type object per la stampa
                     case ENEMY_SHIP_TYPE:
+                        addObject(aliens, NUMBER_ENEMY_SHIPS, obj);
                         printStarShip(win, aliens[i]);
                         break;
                     case BOMB_TYPE:
                         addObject(bomb, MAX_BOMBS_ACTIVE, obj);
-                        printBullet(win, aliens[i]);
+                        //printBullet(win, obj);
                         break;
                 }
             }
-    }
-    wmove(win, Y_HSEPARATOR,0);
-    whline(win, ACS_HLINE,p.x);
-    //mountainsBgEffect(win, p);
-    wrefresh(win);
+        }  
+        
+        
+        for(i = 0; bullets[i].pid != UNDEFINED_PID && i < MAX_BULLETS_ACTIVE; i++){
+            printBullet(win, bullets[i]);
+        }
+
+        for(i = 0; bomb[i].pid != UNDEFINED_PID && i < MAX_BOMBS_ACTIVE; i++){
+            printBullet(win, bomb[i]);
+            mvwprintw(win, 20, 50, "%d", i);
+            
+        }
+        
+        wmove(win, Y_HSEPARATOR,0);
+        whline(win, ACS_HLINE,p.x);
+        //mountainsBgEffect(win, p);
+        wrefresh(win);
     }
 }
 
@@ -316,20 +345,27 @@ void printObjects (WINDOW* win, Point p, int pipeIn, int pipeAliens[NUMBER_ENEMY
  * @param pipeIn 
  */
 
-void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size){
+Status checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size){
     int i;
     bool collisionCheck = false;
+    Status status;
+    status.collision = NO_COLLISION;
     TypeObject arrayType = array[0].typeObject;
     
     switch(obj->typeObject){
         case ALLY_SHIP_TYPE:
-            switch(arrayType){
+            mvwprintw(win, 0, 0, "%d", arrayType);
+            if(arrayType != UNDEFINED){
+                switch(arrayType){
                 case BOMB_TYPE:
+
                     for(i = 0; i<size; i++){
-                        if(checkAllyBombCollision(obj->pos, array->pos)){
-                            obj->health--;
-                            kill(getpid(), SIGINT);
+                        mvwprintw(win, i, i*5, "(%d,%d)", array[i].pos.y, array[i].pos.x);
+                        if(checkAllyBombCollision(obj->pos, array[i].pos)){
+                            status.collision = obj->health > 1 ? LOSE_HEART_COLLISION : DEATH_COLLISION;
+                            perror("Ceeee collisione balorda");
                         }
+                        wrefresh(win);
                     }
                     break;
                 case ENEMY_SHIP_TYPE:
@@ -339,9 +375,11 @@ void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size
                         }
                     }
                     break;
-                default:
-                    perror("object colliding with ship is neither a bomb nor an alien");
+                //default:
+                //    perror("object colliding with ship is neither a bomb nor an alien");
+                }
             }
+            
             break;
         case ENEMY_SHIP_TYPE:
             switch(arrayType){
@@ -349,6 +387,7 @@ void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size
                     for(i=0;i<size;i++){
                         if(checkAlienBulletCollision(obj->pos, array[i].pos)){
                             // uccidi bullet e decrementa vita alien di 1
+                            
                         }
                     }
                     break;
@@ -378,6 +417,7 @@ void checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size
         default:
             perror("wrong object type in checkCollision");
     }
+    return status;
 }
 
 void checkWindowCollision(WINDOW* win, Point p, Object* obj){

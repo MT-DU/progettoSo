@@ -31,6 +31,7 @@ void changeDirection(Status status, Direction* direction){
 void objectArrayInitializer (Object array[], int size) {
     int i;
     for(i=0;i<size;i++){
+        array[i].typeObject = UNDEFINED;
         array[i].pid = UNDEFINED_PID;
     }
 }
@@ -39,7 +40,7 @@ bool addObject (Object array[], int size, Object newObj) {
     int i;
     if(array[size-1].pid==UNDEFINED_PID){ //se size-1 e' 0 allora non e' pieno
         for(i=0;i<size;i++){
-            if(array[i].pid == UNDEFINED_PID){  //incremento nEntities prendendo il numero progressivo dell'oggetto precedente
+            if(array[i].pid == UNDEFINED_PID || array[i].pid == newObj.pid){  //incremento nEntities prendendo il numero progressivo dell'oggetto precedente
                 array[i] = newObj;
             }
         }
