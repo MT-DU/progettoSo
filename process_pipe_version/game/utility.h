@@ -71,7 +71,6 @@ bool checkBulletBombCollision (Point pos1, Point pos2);
 bool checkAllyBombCollision(Point pos1, Point pos2);
 bool checkBulletBombCollision (Point pos1, Point pos2);
 bool checkAlienBulletCollision (Point pos1, Point pos2);
-bool checkAlienAlienCollision (Point pos1, Point pos2);
 bool checkAllyAlienCollision (Point pos1, Point pos2);
 
 bool checkObjOutOfScreenLeft (Point pos, int spriteSize);
