@@ -54,8 +54,8 @@ typedef struct {
     TypeObject typeObject;
     Direction direction;
     Status status;
-    int nEntities;
     int health;
+    int idObj;
 } Object;
 
 void initializePipe(int fileDes[]);

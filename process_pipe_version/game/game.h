@@ -35,7 +35,7 @@ void allyShipController(WINDOW* win, Point p, int pipeOut);
 void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber);
 void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut);
 void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut);
-void printObjects (WINDOW* win, Point p, int pipeIn, int pipeAliens[NUMBER_ENEMY_SHIPS][DIM_PIPE]);
+void printObjects (WINDOW* win, Point p, int pipeIn);
 Status checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size);
 bool removeObject (Object array[], int size, pid_t pidObj);
 bool isGameOver(/*Pensare a cosa metterci*/);
