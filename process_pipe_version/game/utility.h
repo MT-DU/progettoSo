@@ -22,12 +22,14 @@
 #define COLS_ALIEN 3
 #define OUTER_ALIEN 1
 #define ALIEN_SIZE 3
+#define DISTANCE_FROM_CENTER_ALIEN 2
 
 #define MOUNTAINS_ROWS 8
 #define MOUNTAINS_COLS 21
 
 #define MIN_RAND 0
 #define MAX_RAND 100
+#define MAX_HEALTH_ALIEN 3
 
 typedef enum {
     ALLY_SHIP_TYPE, ENEMY_SHIP_TYPE, BIG_ENEMY_SHIP_TYPE, BULLET_TYPE, BOMB_TYPE, UNDEFINED
@@ -73,8 +75,5 @@ bool checkBulletBombCollision (Point pos1, Point pos2);
 bool checkAlienBulletCollision (Point pos1, Point pos2);
 bool checkAllyAlienCollision (Point pos1, Point pos2);
 
-bool checkObjOutOfScreenLeft (Point pos, int spriteSize);
-bool checkObjOutOfScreenRight (Point res, Point pos, int spriteSize);
-bool checkObjOutOfScreenUpDown (Point res, Point pos, int spriteSize);
-
+int countObjects(Object array[], int size);
 

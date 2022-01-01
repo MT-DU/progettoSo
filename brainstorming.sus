@@ -1,7 +1,14 @@
 navicella nemica: 
+
            \./
            <x>
            /^\
+
+navicella nemica di secondo livello:
+
+           x-x
+           | |         
+           x-x
 
 navicella alleata:
 

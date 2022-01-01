@@ -38,7 +38,7 @@ bool positionEquals(Point pos1, Point pos2){
 
 bool checkAllyBombCollision(Point pos1, Point pos2){
     pos1.x = pos1.x + STARSHIP_SIZE;
-    return (pos1.y-1 == pos2.y || pos1.y+1 == pos2.y || pos1.y==pos2.y) && (pos1.x == pos2.x);
+    return (pos1.y-1 == pos2.y || pos1.y+1 == pos2.y || pos1.y==pos2.y) && (pos1.x == pos2.x || pos1.x+1 == pos2.x);
 }
 
 bool checkBulletBombCollision (Point pos1, Point pos2){
@@ -46,7 +46,7 @@ bool checkBulletBombCollision (Point pos1, Point pos2){
 }
 
 bool checkAlienBulletCollision (Point pos1, Point pos2){
-    return (pos1.x-1 == pos2.x && (pos1.y == pos2.y || pos1.y == pos2.y-1 || pos1.y == pos2.y+1));
+    return (pos1.x-1 == pos2.x || pos1.x == pos2.x || pos1.x+1 == pos2.x) && (pos1.y-1 == pos2.y || pos1.y == pos2.y || pos1.y+1 == pos2.y);
 }
 
 bool checkAllyAlienCollision (Point pos1, Point pos2) {
@@ -73,4 +73,12 @@ bool checkObjOutOfScreenRight (Point res, Point pos, int spriteSize){
 
 bool checkObjOutOfScreenUpDown (Point res, Point pos, int spriteSize){
     return pos.y < 0 + spriteSize || pos.y > res.y - spriteSize;
+}
+
+int countObjects(Object array[], int size){
+    int i = 0;
+    while (i<size && array[i].pid != UNDEFINED){
+        i++;
+    }
+    return i;
 }
