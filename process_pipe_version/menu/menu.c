@@ -119,20 +119,41 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter){
 
     int i, y, x;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
-
+    Difficulty difficultyMode = EASY;
     if((*input) == ASCII_CODE_ENTER){
         switch (counter) {
             case PLAY_GAME_NUMBER:
                 wclear(win);
-                mainGame(win, max_res);
+                mainGame(win, max_res, difficultyMode);
                 break;
             case MODE_GAME_NUMBER:
                 wclear(win);
                 hudMainMenu(win, max_res, PRINT_MENU_GAME_MODE);
-                gameMode(win, max_res);
+                gameMode(win, max_res, &difficultyMode);
                 break;
             case QUIT_GAME_NUMBER:
                 (*input) = ASCII_CODE_Q;
+                break;
+        }
+    }
+}
+
+void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked){
+    int i, y, x;
+    int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
+    if(input == ASCII_CODE_ENTER){
+        switch (counter) {
+            case EASY:
+                (*difficultyMode) = EASY;
+                *isPicked = true;
+                break;
+            case HARD:
+                (*difficultyMode) = HARD;
+                *isPicked = true;
+                break;
+            case CUSTOM:
+                (*difficultyMode) = CUSTOM;
+                *isPicked = true;
                 break;
         }
     }
@@ -144,13 +165,15 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter){
  * @param win 
  * @param max_res 
  */
-void gameMode (WINDOW* win, Point max_res) {
+void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode) {
     int i, getInput, counter = 0;
+    bool isPicked = false;
     char vetLabelMenu[NUMBER_CHOICES][DIM_MAX_PRINT_MENU] = LABEL_GAME_MODE_MENU;
     do{
         printMenu(win, max_res, counter, PRINT_MENU_GAME_MODE, NUMBER_CHOICES, vetLabelMenu);
         getInput = wgetch(win);
         keyPadSelector(win, EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
+        selectDifficulty(win, max_res, getInput, counter, difficultyMode, &isPicked);
         refresh();
-    } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q);
+    } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q && !isPicked);
 }

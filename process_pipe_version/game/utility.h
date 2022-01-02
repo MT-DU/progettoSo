@@ -17,6 +17,7 @@
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
 #define STARSHIP_SIZE 3
+#define ALLY_BORDER_SPACE 3
 
 #define ROWS_ALIEN 3
 #define COLS_ALIEN 3
@@ -29,7 +30,7 @@
 
 #define MIN_RAND 0
 #define MAX_RAND 100
-#define MAX_HEALTH_ALIEN 3
+#define BLANK_SPACE ' '
 
 typedef enum {
     ALLY_SHIP_TYPE, ENEMY_SHIP_TYPE, BIG_ENEMY_SHIP_TYPE, BULLET_TYPE, BOMB_TYPE, UNDEFINED
@@ -43,37 +44,37 @@ typedef enum {
 } Direction;
 
 typedef enum {
-    NO_COLLISION, BOUNCE_COLLISION, LOSE_HEART_COLLISION, DEATH_COLLISION
-} CollisionType;
+    VICTORY, DEFEAT, CONTINUE
+} EndGame;
 
-typedef struct {
-    CollisionType collision;
-} Status;
+typedef enum{
+    EASY, HARD, CUSTOM
+} Difficulty;
 
 typedef struct {
     Point pos;
     pid_t pid;
     TypeObject typeObject;
     Direction direction;
-    Status status;
     int health;
     int idObj;
 } Object;
 
 void initializePipe(int fileDes[]);
 void initializeNonBlockingPipe(int fileDes[]);
-void changeDirection(Status status, Direction* direction);
 void objectArrayInitializer (Object array[], int size);
 bool addObject (Object array[], int size, Object newObj);
 bool removeObject (Object array[], int size, pid_t pidObj);
 void catchZombies(Object array[], int size, pid_t pidObj);
 bool positionEquals(Point pos1, Point pos2);
+void initializeArray(int array[], int size, int value);
 
 bool checkBulletBombCollision (Point pos1, Point pos2);
 bool checkAllyBombCollision(Point pos1, Point pos2);
 bool checkBulletBombCollision (Point pos1, Point pos2);
 bool checkAlienBulletCollision (Point pos1, Point pos2);
-bool checkAllyAlienCollision (Point pos1, Point pos2);
+bool checkAllyAlienCollision (Point pos1);
 
 int countObjects(Object array[], int size);
 
+void clearObjects (WINDOW* win, Point p, Object obj);

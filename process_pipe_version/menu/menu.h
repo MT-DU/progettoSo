@@ -48,6 +48,7 @@ void mainMenu(WINDOW *win, Point max_res);
 void hudMainMenu(WINDOW *win, Point max_res, int menu);
 void printLogo(WINDOW *win, Point max_res);
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter);
-void gameMode (WINDOW* win, Point max_res);
+void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
+void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode);
 
 

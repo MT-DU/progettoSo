@@ -6,24 +6,6 @@ void initializePipe(int fileDes[]){
     }
 }
 
-/**
- * @brief Procedura che cambia la direzione dell'alieno al verificarsi di una collisione
- * 
- * @param status 
- * @param direction 
- */
-void changeDirection(Status status, Direction* direction){
-    switch (status.collision) {
-        case BOUNCE_COLLISION:
-            if((*direction) == UP_DIRECTION){
-                (*direction) = DOWN_DIRECTION;
-            } else {
-                (*direction) = UP_DIRECTION;
-            }
-        break;
-    }
-}
-
 void objectArrayInitializer (Object array[], int size) {
     int i;
     for(i=0;i<size;i++){
@@ -36,6 +18,13 @@ bool positionEquals(Point pos1, Point pos2){
     return pos1.y == pos2.y && pos1.x == pos2.x;
 }
 
+void initializeArray(int array[], int size, int value){
+    int i;
+    for(i = 0; i < size; i++){
+        array[i] = value;
+    }
+}
+
 bool checkAllyBombCollision(Point pos1, Point pos2){
     pos1.x = pos1.x + STARSHIP_SIZE;
     return (pos1.y-1 == pos2.y || pos1.y+1 == pos2.y || pos1.y==pos2.y) && (pos1.x == pos2.x || pos1.x+1 == pos2.x);
@@ -46,20 +35,13 @@ bool checkBulletBombCollision (Point pos1, Point pos2){
 }
 
 bool checkAlienBulletCollision (Point pos1, Point pos2){
+    pos1.x = pos1.x+1;
     return (pos1.x-1 == pos2.x || pos1.x == pos2.x || pos1.x+1 == pos2.x) && (pos1.y-1 == pos2.y || pos1.y == pos2.y || pos1.y+1 == pos2.y);
 }
 
-bool checkAllyAlienCollision (Point pos1, Point pos2) {
+bool checkAllyAlienCollision (Point pos1) {
     int i,j;
-    bool check = false;
-
-    for (i=0;i<3;i++) {
-        for(j=0;j<3;j++) {
-            if(pos1.y-1+i == pos2.y-1+j && (pos1.x+STARSHIP_SIZE == pos2.x-1 || pos1.x+STARSHIP_SIZE == pos2.x-2)){
-                check = true;
-            }
-        }
-    }
+    bool check = pos1.x == (COLS_STARSHIP + COLS_STARSHIP);
     return check;
 }
 
@@ -76,9 +58,44 @@ bool checkObjOutOfScreenUpDown (Point res, Point pos, int spriteSize){
 }
 
 int countObjects(Object array[], int size){
-    int i = 0;
-    while (i<size && array[i].pid != UNDEFINED){
-        i++;
+    int i = 0, contAliens = 0;
+    for(i = 0; i<size; i++){
+        if(array[i].pid != UNDEFINED_PID){
+            contAliens++;
+        }
     }
-    return i;
+    return contAliens;
+}
+
+void clearObjects (WINDOW* win, Point p, Object obj) {
+
+    int i,j,k,y;
+
+    switch(obj.typeObject){
+        case BOMB_TYPE:
+            for(k=0;k<ROWS_ALIEN;k++){
+                for(j=0;j<COLS_ALIEN;j++){
+                    mvwaddch(win, obj.pos.y-1+k, obj.pos.x-1+j, BLANK_SPACE);
+                }
+            }
+            break;
+        case BULLET_TYPE:
+            for(k=0;k<ROWS_ALIEN;k++){
+                for(j=0;j<COLS_ALIEN;j++){
+                    mvwaddch(win, obj.pos.y-1+k, obj.pos.x-1+j, BLANK_SPACE);
+                }
+            }               
+            break;
+        case ENEMY_SHIP_TYPE:
+            for(k=0;k<ROWS_ALIEN;k++){
+                for(j=0;j<COLS_ALIEN;j++){
+                    y = obj.pos.y-divideByTwo(ALIEN_SIZE) + k;
+                    mvwaddch(win, y, obj.pos.x+j, BLANK_SPACE);
+                }
+            }
+            break;
+
+    }
+
+
 }

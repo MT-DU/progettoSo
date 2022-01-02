@@ -6,9 +6,9 @@
  * @param win 
  * @param p
  */
-void mainGame(WINDOW* win, Point p){
+void mainGame(WINDOW* win, Point p, Difficulty difficultyMode){
     srand(time(NULL));
-    pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS], allyShip;
+    pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS_HARD], allyShip;
     int fileDes[DIM_PIPE];
     int i, status;
     
@@ -22,20 +22,20 @@ void mainGame(WINDOW* win, Point p){
             allyShipController(win, p, fileDes[PIPE_WRITE]);
             break;
         default:
-            for(i = 0; i < NUMBER_ENEMY_SHIPS; i++){ //cicla finchè non genera tutti gli alieni
+            for(i = 0; i < getMaxAlien(difficultyMode); i++){ //cicla finchè non genera tutti gli alieni
                 switch (pidEnemyShips[i] = fork()) { //creazione processi alieni
                     case PROCESS_RETURN_FAILURE:
                         printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
                         break;
                     case PROCESS_RETURN_CHILD_PID: //processo figlio che gestisce l'alieno
                         close(fileDes[PIPE_READ]);
-                        enemyShipController(win, p, fileDes[PIPE_WRITE], i);
+                        enemyShipController(win, p, fileDes[PIPE_WRITE], i, difficultyMode);
                         break;                   
                 }
             }    
             close(fileDes[PIPE_WRITE]);
-            printObjects(win, p, fileDes[PIPE_READ]);
-            endGame(pidEnemyShips, allyShip);
+            printObjects(win, p, fileDes[PIPE_READ], difficultyMode);
+            endGame(pidEnemyShips, allyShip, difficultyMode);
     }
     while(wait(0)>0);
 }
@@ -58,6 +58,8 @@ void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens){
     for(i=0;i<allyShipHealth;i++){
         mvwprintw(win, TEXT_HUD_POS_Y, healthPosX+i*3, "<3 ");
     }
+    mvwprintw(win, TEXT_HUD_POS_Y, TIMER_BAR_POS_X, "Timer: %d", timer);
+    mvwprintw(win, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X, ALIENS_TEXT_HUD, nAliens);
 }
 /**
  * @brief procedura che permette di dare un effetto grafico nello sfondo
@@ -65,43 +67,30 @@ void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens){
  * @param win 
  * @param p 
  */
-void mountainsBgEffect(WINDOW* win, Point p){
+void mountainsBgEffect(WINDOW* win, Point p, int timer){
 
-    int x = 0, y = getmaxy(win)-MOUNTAINS_ROWS, i = -1, j = 0, k;
+    char mountains[MOUNTAINS_ROWS][MOUNTAINS_COLS]= {
+                    {"        /\\    *      "},
+                    {"       /**\\       *  "},
+                    {"   *  /****\\         "},
+                    {"     /*/\\***\\        "},
+                    {"    / /**\\   \\  /\\   "},
+                    {"   / /    \\   \\/YY\\  "},
+                    {" /\\ /YYYYYY\\   \\YYY\\ "},
+                    {"/  \\YYYYYYYY\\YYY\\YYY\\"}
+                    };
+    int i, j, x = 0, y = 0;
 
-    char mountains[MOUNTAINS_ROWS][MOUNTAINS_COLS]={
-    {"        /\\    *      "},
-    {"       /**\\       *  "},
-    {"   *  /****\\         "},
-    {"     /*/\\***\\        "},
-    {"    / /**\\   \\  /\\   "},
-    {"   / /    \\   \\/YY\\  "},
-    {" /\\ /YYYYYY\\   \\YYY\\ "},
-    {"/  \\YYYYYYYY\\YYY\\YYY\\"}};
-    usleep(200000);
-    while(true){
-        
-        if(x > getmaxx(win)-10){
-            for(k=0;k<MOUNTAINS_ROWS;k++){
-                move(y+k,1);
-                delch();
-            } 
+    while(x<p.x){
+        for(i=0;i<MOUNTAINS_ROWS;i++){
+            for(j=0;j<MOUNTAINS_COLS;j++){
+                mvwaddch(win, p.y-i, x+j, mountains[i][j]);
+                
+            }
         }
-        
-        
-        if(i == MOUNTAINS_COLS-1){
-            i=0;
-        } else {
-            i++;
-        }
-
-        
-        for(j=0;j<MOUNTAINS_ROWS;j++){
-            mvaddch(y+j, x, mountains[j][i]);
-        }
-        usleep(200000);
+        x=+MOUNTAINS_COLS;
     }
-    x++;
+    
 }
 
 /**
@@ -113,7 +102,7 @@ void allyShipController(WINDOW* win, Point p, int pipeOut){
     pid_t bullets[NUMBER_BULLETS];
     int i = 0;
     Object ship;
-    ship.pos.x = ALLY_BORDER_SPACE + STARSHIP_SIZE;
+    ship.pos.x = ALLY_BORDER_SPACE;
     ship.pos.y = Y_HSEPARATOR + divideByTwo(p.y - Y_HSEPARATOR);
     ship.typeObject = ALLY_SHIP_TYPE;
     ship.direction = 0;
@@ -164,10 +153,10 @@ void allyShipController(WINDOW* win, Point p, int pipeOut){
  * @param pipeOut pipe di scrittura
  * @param idNumber il famoso M delle specifiche
  */
-void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber){
+void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode){
     pid_t bomb;
     Object alien;
-    int statusPid, i = 0, numSpostamenti = 3, timer = 1;
+    int statusPid, i = 0, numSpostamenti = 3;
     bool generateBomb = true;
     // posizione iniziale dell'alieno con numero progressivo uguale a idNumber
     i = idNumber / MAX_ALIENS_FOR_ROW;
@@ -182,9 +171,10 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber){
 
     while(true){
         write(pipeOut, &alien, sizeof(Object));
+        /* SPOSTAMENTO SINCRONO DEGLI ALIENI */
         switch(alien.direction){
             case UP_DIRECTION:
-                if(numSpostamenti == 1){
+                if(numSpostamenti == MIN_MOVE_ALIEN){
                     alien.direction = DOWN_DIRECTION;
                     alien.pos.x--;
                 }else{
@@ -193,7 +183,7 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber){
                 numSpostamenti--;
                 break;
             case DOWN_DIRECTION:
-                if(numSpostamenti == 5){
+                if(numSpostamenti == MAX_MOVE_ALIEN){
                     alien.direction = UP_DIRECTION;
                     alien.pos.x--;
                 }else{
@@ -236,6 +226,7 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
     bullet.typeObject = BULLET_TYPE;
     bullet.direction = direction;
     bullet.idObj = direction; //assegno come id unico la direzione
+    bullet.pid = getpid();
     while(p.x >= bullet.pos.x){
         switch (bullet.direction) { 
             case UP_DIRECTION:
@@ -259,7 +250,7 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
                 }
             }
         write(pipeOut, &bullet, sizeof(Object));
-        usleep(200000);
+        usleep(100000);
     }
     _exit(SIGUSR1);
 }
@@ -289,15 +280,19 @@ void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut){
  * 
  * @param pipeOut 
  */
-void printObjects (WINDOW* win, Point p, int pipeIn) {
-    Object allyShip, aliens[NUMBER_ENEMY_SHIPS], obj;
-    Object bullets[MAX_BULLETS_ACTIVE], bomb[NUMBER_ENEMY_SHIPS];
+void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) {
+    Object allyShip, aliens[NUMBER_ENEMY_SHIPS_HARD], obj;
+    Object bullets[MAX_BULLETS_ACTIVE], bomb[getMaxAlien(difficultyMode)];
     objectArrayInitializer(bullets, MAX_BULLETS_ACTIVE);
-    objectArrayInitializer(bomb, NUMBER_ENEMY_SHIPS);
-    objectArrayInitializer(aliens, NUMBER_ENEMY_SHIPS);
-    int status, i, allyShipHealth = MAX_HEALTH_ALIEN, aliensHealth[NUMBER_ENEMY_SHIPS] = {MAX_HEALTH_ALIEN};
-    bool takeHealth = false, alienAllyCollision = false;
-    while (!isGameOver(allyShip.health, alienAllyCollision)) {
+    objectArrayInitializer(bomb, getMaxAlien(difficultyMode));
+    objectArrayInitializer(aliens, getMaxAlien(difficultyMode));
+    int status, i, allyShipHealth = getMaxHealth(difficultyMode), aliensHealth[MAX_HEALTH_ALIEN], nAliensAlive = getMaxAlien(difficultyMode);
+    int timer = 0;
+    bool takeHealth = false, alienAllyCollision = false, firstKill = false;
+    EndGame gameStatus = CONTINUE;
+
+    initializeArray(aliensHealth, getMaxAlien(difficultyMode), MAX_HEALTH_ALIEN);
+    do {
         if(read(pipeIn, &obj, sizeof(Object)) > 0) { // lettura dalla pipe della navicella alleata
             switch(obj.typeObject){
                 case ALLY_SHIP_TYPE:
@@ -309,21 +304,26 @@ void printObjects (WINDOW* win, Point p, int pipeIn) {
                     break;
                 case BULLET_TYPE:
                     bullets[obj.idObj] = obj;
-                    for(i=0; i<NUMBER_ENEMY_SHIPS; i++){
-                        if(checkAlienBulletCollision(aliens[i].pos, bullets[obj.idObj].pos)){
+                    for(i=0; i<getMaxAlien(difficultyMode); i++){
+                        if(aliens[i].pid != UNDEFINED_PID && checkAlienBulletCollision(aliens[i].pos, bullets[obj.idObj].pos)){
                             aliensHealth[i]--;
                             aliens[i].health = aliensHealth[i];
                             kill(bullets[obj.idObj].pid, SIGUSR1);
+                            bullets[obj.idObj].pid = UNDEFINED_PID;
+                            clearObjects(win, p, obj);
+                            if(aliens[i].health == 0){
+                                kill(aliens[i].pid, SIGUSR1);
+                                aliens[i].pid = UNDEFINED_PID;
+                                clearObjects(win, p, aliens[i]);
+                                firstKill = true;
+                            }
                         }
                     }
-                    printBullet(win, bullets[obj.idObj]);
-
                     break;
                 case ENEMY_SHIP_TYPE:
                     aliens[obj.idObj] = obj;
                     aliens[obj.idObj].health = aliensHealth[obj.idObj];
-
-                    if(checkAllyAlienCollision(allyShip.pos, aliens[obj.idObj].pos)){
+                    if(checkAllyAlienCollision(aliens[obj.idObj].pos)){
                         alienAllyCollision=true;
                     }
                     break;
@@ -332,127 +332,80 @@ void printObjects (WINDOW* win, Point p, int pipeIn) {
                     if(checkAllyBombCollision(allyShip.pos, bomb[obj.idObj].pos)){
                         allyShipHealth--;
                         kill(bomb[obj.idObj].pid, SIGUSR2);
+                        clearObjects(win, p, obj);
                     }
                     break;
             }      
         }        
 
+        for(i = 0; i<NUMBER_BULLETS; i++){ 
+            if(bullets[i].pid != UNDEFINED_PID){
+                printBullet(win, bullets[i]);
+            }
+        }
+
         //stampa degli oggetti nemici
-        for(i = 0; i<NUMBER_ENEMY_SHIPS; i++){  //ciclo tutte le pipe degli alieni
-            printStarShip(win, p, aliens[i]);
+        for(i = 0; i<getMaxAlien(difficultyMode); i++){  
+            if(aliens[i].pid != UNDEFINED_PID){
+                printStarShip(win, p, aliens[i]);
+            }
+            
+            //mvwprintw(win, aliens[i].pos.y+3, aliens[i].pos.x, "O");
+            //mvwprintw(win, aliens[i].pos.y, aliens[i].pos.x-1, "I");
             printBullet(win, bomb[i]);
         }
 
-        for(i=0;i<p.y;i++){
-            mvwaddch(win,i,0,BLANK_SPACE);
+        if(firstKill){
+            nAliensAlive = countObjects(aliens, getMaxAlien(difficultyMode));
         }
-        
         //STAMPA RIGA ORIZZONTALE
         wmove(win, Y_HSEPARATOR,0);
         whline(win, ACS_HLINE,p.x);
-        hudGame(win, p, allyShip.health, 100, countObjects(aliens, NUMBER_ENEMY_SHIPS));
-        //mountainsBgEffect(win, p);
+        hudGame(win, p, allyShip.health, timer, nAliensAlive);
+        //mountainsBgEffect(win, p, timer);
+        timer++;
         
+        gameStatus = isGameOver(allyShip.health, alienAllyCollision, nAliensAlive);
         wrefresh(win);
-    }
-}
-
-/**
- * @brief Lo scopo di questa procedura è quella di scrivere all'interno della pipe se 
- * 
- * @param win  
- * @param p 
- * @param pipeIn 
- */
-
-/*
-Status checkCollision (WINDOW* win, Point p, Object* obj, Object array[], int size){
-    int i;
-    bool collisionCheck = false;
-    Status status;
-    status.collision = NO_COLLISION;
-    TypeObject arrayType = array[0].typeObject;
+    } while (gameStatus == CONTINUE);
     
-    switch(obj->typeObject){
-        case ALLY_SHIP_TYPE:
-            //mvwprintw(win, 0, 0, "%d", arrayType);
-            if(arrayType != UNDEFINED){
-                switch(arrayType){
-                case BOMB_TYPE:
-
-                    for(i = 0; i<size; i++){
-                        //mvwprintw(win, i, i*5, "(%d,%d)", array[i].pos.y, array[i].pos.x);
-                        if(checkAllyBombCollision(obj->pos, array[i].pos)){
-                            status.collision = obj->health > 1 ? LOSE_HEART_COLLISION : DEATH_COLLISION;
-                            kill(array[i].pid, SIGUSR2);
-                        }
-                        wrefresh(win);
-                    }
-                    break;
-                case ENEMY_SHIP_TYPE:
-                    for(i = 0; i<size; i++){
-                        if(checkAllyAlienCollision(obj->pos, array->pos)){
-                            // perdo la partita
-                        }
-                    }
-                    break;
-                //default:
-                //    perror("object colliding with ship is neither a bomb nor an alien");
-                }
-            }
-            
+    switch(gameStatus){
+        case VICTORY:
             break;
-        case ENEMY_SHIP_TYPE:
-            switch(arrayType){
-                case BULLET_TYPE:
-                    
-                    break;
-                default:
-                    //perror("object colliding with alien is neither a bullet nor an alien");
-                    break;
-            }
+        case DEFEAT:
+            //TODO stampa di sconfitta
             break;
-        case BULLET_TYPE:
-            switch (arrayType) {
-                case BOMB_TYPE:
-                    for(i=0;i<size;i++) {
-                        if(checkBulletBombCollision(obj->pos,array[i].pos)){
-                            // uccidi entrambi i processi bullet e bomb
-                        }
-                    }
-                    break;
-                case ENEMY_SHIP_TYPE:
-                        for(i=0;i<size;i++){
-                            if(checkAlienBulletCollision(obj->pos, array[i].pos)){
-                                array[i].health--;
-                                status.collision = obj->health > 1 ? LOSE_HEART_COLLISION : DEATH_COLLISION;
-                                kill(obj->pid, SIGUSR1);
-                            }
-                        }
-                    break;
-            }
-    return status;
     }
 }
-*/
+
 /**
  * @brief funzione che restituisce true se il gioco e' finito o meno 
  * 
  */
-bool isGameOver (int healthAllyShip, int alienAllyCollision){
-    return healthAllyShip == 0 || alienAllyCollision;
+EndGame isGameOver (int healthAllyShip, bool alienAllyCollision, int nAliensAlive){
+    if(healthAllyShip == 0 || alienAllyCollision){
+        return DEFEAT;
+    }
+    
+    return nAliensAlive == 0 ? VICTORY : CONTINUE;
 }
 
-// sample of starship
+/**
+ * @brief Procedura che ha la funzione di stampare la navicella alleata e gli alieni di primo
+ * e secondo livello
+ * 
+ * @param win 
+ * @param p 
+ * @param ship 
+ */
 void printStarShip (WINDOW* win, Point p, Object ship) {
     int i,j, y;
     switch(ship.typeObject){
+        /* STAMPA NAVICELLA ALLEATA */
         case ALLY_SHIP_TYPE:
+            char allySprite[ROWS_STARSHIP][COLS_STARSHIP] = STARSHIP;
             mvwprintw(win, ship.pos.y-OUTER_STARSHIP, ship.pos.x, BLANK_SPACES_STARSHIP);
             mvwprintw(win, ship.pos.y+OUTER_STARSHIP, ship.pos.x, BLANK_SPACES_STARSHIP);
-
-            char allySprite[ROWS_STARSHIP][COLS_STARSHIP] = STARSHIP;
-
             for(i=0;i<ROWS_STARSHIP;i++){
                 for(j=0;j<COLS_STARSHIP;j++){
                     y = ship.pos.y-divideByTwo(STARSHIP_SIZE) + i;
@@ -460,11 +413,12 @@ void printStarShip (WINDOW* win, Point p, Object ship) {
                 }
             }
             break;
+            /* STAMPA ALIENI */
         case ENEMY_SHIP_TYPE:
             
             y = ship.direction == UP_DIRECTION ? OUTER_ALIEN*DISTANCE_FROM_CENTER_ALIEN : OUTER_ALIEN*(-DISTANCE_FROM_CENTER_ALIEN);
             mvwprintw(win, ship.pos.y+y, ship.pos.x-OUTER_ALIEN, BLANK_SPACES_ALIEN);
-            
+            /* CANCELLA POSIZIONE PRECEDENTE DELL'ALIENO */
             for(i=0;i<ALIEN_SIZE+2;i++){
                 mvwaddch(win, ship.pos.y+i-2, ship.pos.x+DISTANCE_FROM_CENTER_ALIEN, BLANK_SPACE);
                 mvwaddch(win, ship.pos.y+i-2, ship.pos.x+DISTANCE_FROM_CENTER_ALIEN+1, BLANK_SPACE);
@@ -486,14 +440,15 @@ void printStarShip (WINDOW* win, Point p, Object ship) {
                     for(j=0;j<COLS_ALIEN;j++){
                         y = ship.pos.y-divideByTwo(ALIEN_SIZE) + i;
                         mvwaddch(win, y, ship.pos.x+j, alienSprite[i][j]);
+
                     }
                 }
             }
-            
+           // mvwprintw(win, ship.pos.y, ship.pos.x, "#", ship.pos.x, ship.pos.y);
             break;
     }
-    
 }
+
 /**
  * @brief Stampa proiettili
  * 
@@ -520,9 +475,7 @@ void printBullet (WINDOW* win, Object bullet) {
 
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot) {
     keypad(win, TRUE);
-    //timeout(100);
     cbreak();
-    halfdelay(true);
     int arrow = wgetch(win);
     if(arrow == ASCII_CODE_SPACE_BAR) {
         *isBulletShot = true;
@@ -535,10 +488,18 @@ bool checkPos (Point p, int yPos, int size) {
     return yPos > Y_HSEPARATOR+size && yPos < p.y-size;
 }
 
-void endGame(pid_t aliens[], pid_t allyShip){
+void endGame(pid_t aliens[], pid_t allyShip, Difficulty difficultyMode){
     int i;
-    for(i=0; i<NUMBER_ENEMY_SHIPS; i++){
+    for(i=0; i<getMaxAlien(difficultyMode); i++){
         kill(aliens[i], SIGUSR2);
     }
     kill(allyShip, SIGUSR2);
+}
+
+int getMaxAlien(Difficulty difficultyMode){
+    return difficultyMode == EASY ? NUMBER_ENEMY_SHIPS_EASY : NUMBER_ENEMY_SHIPS_HARD;
+}
+
+int getMaxHealth(Difficulty difficultyMode){
+    return difficultyMode == EASY ? MAX_HEALTH_ALLY_EASY : MAX_HEALTH_ALLY_HARD;
 }
