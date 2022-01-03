@@ -95,6 +95,15 @@ void setupColors(){
     init_color(COLOR_BLUE, 0,464,868);
     init_pair(PAIR_COLOR_LOGO, COLOR_CYAN,COLOR_BLACK); 
     init_pair(PAIR_COLOR_TEXT, COLOR_WHITE,COLOR_BLACK);
+    init_pair(PAIR_COLOR_ALLY_SHIP, COLOR_GREEN, COLOR_BLACK);
+    init_pair(PAIR_COLOR_BULLET, COLOR_BLUE, COLOR_BLACK);
+    init_pair(PAIR_COLOR_ALIEN, COLOR_GREEN, COLOR_BLACK);
+    init_pair(PAIR_COLOR_ALIEN_HALF_HEALTH, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(PAIR_COLOR_ALIEN_LOW_HEALTH, COLOR_RED, COLOR_BLACK);
+    init_pair(PAIR_COLOR_ALIENS_REMAINING, COLOR_RED, COLOR_BLACK);
+    init_pair(PAIR_COLOR_BOMB, COLOR_RED, COLOR_BLACK);
+    init_pair(PAIR_COLOR_HEART, COLOR_RED, COLOR_BLACK);
+    init_pair(PAIR_COLOR_ALIENS_REMAINING, COLOR_RED, COLOR_BLACK);
 }
 
 /**
@@ -107,3 +116,12 @@ void pickColor(WINDOW* win, int type_color){
     wattron(win, COLOR_PAIR(type_color));
 }
 
+/**
+ * @brief Procedura che disattiva il colore selezionato
+ * 
+ * @param win 
+ * @param color 
+ */
+void turnOffColor(WINDOW* win, int type_color){
+    wattroff(win, COLOR_PAIR(type_color));
+}

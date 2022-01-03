@@ -39,6 +39,7 @@ void mainWindow(){
 void mainMenu(WINDOW *win, Point max_res){
     int getInput, counter = 0;
     char vetLabelMenu[NUMBER_CHOICES][DIM_MAX_PRINT_MENU] = LABEL_MAIN_MENU;
+    Difficulty difficultyMode = EASY;
     keypad(win, true); 
     cbreak();
     do{
@@ -47,7 +48,7 @@ void mainMenu(WINDOW *win, Point max_res){
         printMenu(win, max_res, counter, PRINT_MENU_MAIN, NUMBER_CHOICES, vetLabelMenu);
         getInput = wgetch(win);
         keyPadSelector(win, PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
-        selectOptionMainMenu(win, max_res, &getInput, counter);
+        selectOptionMainMenu(win, max_res, &getInput, counter, &difficultyMode);
         refresh();
     } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q); // q è il tasto per quittare
 }
@@ -115,21 +116,20 @@ void printLogo (WINDOW* win, Point max_res) {
  * @param input
  * @param counter opzione selezionata dal main menu
  */
-void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter){
+void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode){
 
     int i, y, x;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
-    Difficulty difficultyMode = EASY;
     if((*input) == ASCII_CODE_ENTER){
         switch (counter) {
             case PLAY_GAME_NUMBER:
                 wclear(win);
-                mainGame(win, max_res, difficultyMode);
+                mainGame(win, max_res, *difficultyMode);
                 break;
             case MODE_GAME_NUMBER:
                 wclear(win);
                 hudMainMenu(win, max_res, PRINT_MENU_GAME_MODE);
-                gameMode(win, max_res, &difficultyMode);
+                gameMode(win, max_res, difficultyMode);
                 break;
             case QUIT_GAME_NUMBER:
                 (*input) = ASCII_CODE_Q;

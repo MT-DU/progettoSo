@@ -15,6 +15,7 @@
 #define BLANK_SPACES_STARSHIP "      "
 #define MAX_BULLETS_ACTIVE 2
 #define BULLET_PACE 4
+#define NO_HEALTH_REMAINING 0
 
 /* MACRO PER GLI ALIENI */
 #define BOMB_SPRITE '@'
@@ -40,10 +41,12 @@
 #define MAX_HEALTH_ALIEN 3
 #define MAX_HEALTH_ALLY_EASY 3
 #define NUMBER_ENEMY_SHIPS_EASY 3
+#define DELAY_ALIEN_EASY 200000
 
 /*DIFFICULTY: HARD*/
 #define MAX_HEALTH_ALLY_HARD 1
 #define NUMBER_ENEMY_SHIPS_HARD 9
+#define DELAY_ALIEN_HARD 400000
 
 void mainGame(WINDOW* win, Point p, Difficulty difficultyMode);
 void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens);
@@ -51,7 +54,7 @@ void mountainsBgEffect(WINDOW* win, Point p, int timer);
 void allyShipController(WINDOW* win, Point p, int pipeOut);
 void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode);
 void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut);
-void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut);
+void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut, Difficulty difficultyMode);
 void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode);
 bool removeObject (Object array[], int size, pid_t pidObj);
 EndGame isGameOver(int healthAllyShip, bool alienAllyCollision, int nAliensAlive);
@@ -63,3 +66,4 @@ void checkWindowCollision(WINDOW* win, Point p, Object* obj);
 void endGame(pid_t aliens[], pid_t allyShip, Difficulty difficultyMode);
 int getMaxAlien(Difficulty difficultyMode);
 int getMaxHealth(Difficulty difficultyMode);
+int getDelay(Difficulty difficultyMode);
