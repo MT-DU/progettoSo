@@ -596,14 +596,15 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
     wclear(win);
     int x = divideByTwo(p.x), y = divideByTwo(p.y);
     int i,j;
-    
+    char winPrint[CUP_ROWS][CUP_COLS];
+    char defeatPrint[FACE_ROWS][FACE_COLS];
     switch(gameStatus){
 
         // victory
         case VICTORY:
-            char winPrint[CUP_ROWS][CUP_COLS] = {"","","","","","","","","","",""};
 
             for(i = 0; i < CUP_ROWS; i++){
+                strcpy(winPrint[i], "");
                 switch (i) {
                     case 0:
                         strcat(winPrint[i], CUP1);
@@ -648,9 +649,9 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
 
         // defeat
         case DEFEAT:
-            char defeatPrint[FACE_ROWS][FACE_COLS] = {"","","","","","","","","",""};
 
             for(i = 0; i < FACE_ROWS; i++){
+                strcpy(defeatPrint[i], "");
                 switch (i) {
                     case 0:
                         strcat(defeatPrint[i], FACE1);
