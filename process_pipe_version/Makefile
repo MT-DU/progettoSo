@@ -1,4 +1,4 @@
-spaced: ./window/gestisciFinestre.h ./menu/menu.h ./game/utility.h ./game/game.h ./errors/errors.h gestisciFinestre.o utility.o game.o menu.o errors.o main.o
+spaced: gestisciFinestre.o utility.o game.o menu.o errors.o main.o
 	gcc ./window/gestisciFinestre.h ./menu/menu.h ./game/utility.h ./game/game.h ./errors/errors.h gestisciFinestre.o utility.o game.o menu.o errors.o main.o -o spaced -lncurses
 
 main.o: ./menu/menu.h main.c 
