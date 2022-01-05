@@ -15,7 +15,6 @@ void mainApp(){
     setupColors();
     mainWindow();
     
-    refresh();
     endwin();
 }
 
@@ -49,7 +48,7 @@ void mainMenu(WINDOW *win, Point max_res){
         getInput = wgetch(win);
         keyPadSelector(win, PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
         selectOptionMainMenu(win, max_res, &getInput, counter, &difficultyMode);
-        refresh();
+        wrefresh(win);
     } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q); // q è il tasto per quittare
 }
 
@@ -125,6 +124,7 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
             case PLAY_GAME_NUMBER:
                 wclear(win);
                 mainGame(win, max_res, *difficultyMode);
+                fflush(stdin);
                 break;
             case MODE_GAME_NUMBER:
                 wclear(win);
@@ -174,6 +174,6 @@ void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode) {
         getInput = wgetch(win);
         keyPadSelector(win, EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
         selectDifficulty(win, max_res, getInput, counter, difficultyMode, &isPicked);
-        refresh();
+        wrefresh(win);
     } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q && !isPicked);
 }

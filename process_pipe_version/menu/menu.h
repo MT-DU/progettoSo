@@ -42,7 +42,6 @@
 
 /* PROTOTIPI FUNZIONI / PROCEDURE */
 void mainApp();
-
 void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
 void hudMainMenu(WINDOW *win, Point max_res, int menu);

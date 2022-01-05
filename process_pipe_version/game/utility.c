@@ -85,7 +85,25 @@ bool checkBulletBombCollision (Point pos1, Point pos2){
  */
 bool checkAlienBulletCollision (Point pos1, Point pos2){
     pos1.x = pos1.x+1;
-    return (pos1.x-1 == pos2.x || pos1.x == pos2.x || pos1.x+1 == pos2.x) && (pos1.y-1 == pos2.y || pos1.y == pos2.y || pos1.y+1 == pos2.y);
+    return 
+    (pos1.x-2 == pos2.x && pos1.y-1 == pos2.y)||
+    (pos1.x-2 == pos2.x && pos1.y == pos2.y)||
+    (pos1.x-2 == pos2.x && pos1.y+1 == pos2.y) ||
+
+    (pos1.x-1 == pos2.x && pos1.y-1 == pos2.y) ||
+    (pos1.x-1 == pos2.x && pos1.y == pos2.y)||
+    (pos1.x-1 == pos2.x && pos1.y+1 == pos2.y)||
+
+    (pos1.x == pos2.x && pos1.y-1 == pos2.y)||
+    (pos1.x == pos2.x && pos1.y+1 == pos2.y)||
+
+    (pos1.x+1 == pos2.x && pos1.y-1 == pos2.y)||
+    (pos1.x+1 == pos2.x && pos1.y == pos2.y)||
+    (pos1.x+1 == pos2.x && pos1.y+1 == pos2.y) ||
+
+    (pos1.x+2 == pos2.x && pos1.y-1 == pos2.y)||
+    (pos1.x+2 == pos2.x && pos1.y == pos2.y)||
+    (pos1.x+2 == pos2.x && pos1.y+1 == pos2.y);
 }
 
 /**

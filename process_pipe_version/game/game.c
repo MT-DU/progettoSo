@@ -12,7 +12,8 @@ void mainGame(WINDOW* win, Point p, Difficulty difficultyMode){
     pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS_HARD], allyShip;
     int fileDes[DIM_PIPE];
     int i, status;
-    
+    EndGame gameStatus;
+
     initializePipe(fileDes);
     switch (allyShip = fork()) { //creazione processo navicella alleata
         case PROCESS_RETURN_FAILURE:
@@ -36,9 +37,10 @@ void mainGame(WINDOW* win, Point p, Difficulty difficultyMode){
                 }
             }    
             close(fileDes[PIPE_WRITE]);
-            printObjects(win, p, fileDes[PIPE_READ], difficultyMode);
+            gameStatus = printObjects(win, p, fileDes[PIPE_READ], difficultyMode);
             endGame(pidEnemyShips, allyShip, difficultyMode);
     }
+    endGamePrint(win, p, gameStatus);
     while(wait(0)>0);
 }
 
@@ -286,7 +288,7 @@ void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut, Difficult
     bomb.pid = getpid();
     while(bomb.pos.x > 0){
         bomb.pos.x--;
-        usleep(getDelay(difficultyMode));
+        usleep(50000);
         write(pipeOut, &bomb, sizeof(Object));
     }
     _exit(SIGUSR2);
@@ -300,7 +302,7 @@ void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut, Difficult
  * @param pipeIn 
  * @param difficultyMode 
  */
-void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) {
+EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) {
     Object allyShip, aliens[NUMBER_ENEMY_SHIPS_HARD], obj;
     Object bullets[MAX_BULLETS_ACTIVE], bomb[NUMBER_ENEMY_SHIPS_HARD];
     objectArrayInitializer(bullets, MAX_BULLETS_ACTIVE);
@@ -326,7 +328,9 @@ void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) 
                     break;
                 case BULLET_TYPE:
                     bullets[obj.idObj] = obj;
+                    //mvwprintw(win, obj.idObj, 50, "proiettile %d: pos(%d, %d)", obj.idObj, bullets[obj.idObj].pos.x, bullets[obj.idObj].pos.y);
                     for(i=0; i<getMaxAlien(difficultyMode); i++){
+                        //mvwprintw(win, i, 1, "alieno %d: pos(%d, %d)", i, aliens[i].pos.x, aliens[i].pos.y);
                         if(aliens[i].pid != UNDEFINED_PID && checkAlienBulletCollision(aliens[i].pos, bullets[obj.idObj].pos)){
                             aliensHealth[i]--;
                             aliens[i].health = aliensHealth[i];
@@ -347,6 +351,7 @@ void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) 
                 case ENEMY_SHIP_TYPE:
                     aliens[obj.idObj] = obj;
                     aliens[obj.idObj].health = aliensHealth[obj.idObj];
+                    
                     if(checkAllyAlienCollision(aliens[obj.idObj].pos)){
                         alienAllyCollision=true;
                     }
@@ -373,6 +378,8 @@ void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) 
         for(i = 0; i<getMaxAlien(difficultyMode); i++){  
             if(aliens[i].pid != UNDEFINED_PID){
                 printStarShip(win, p, aliens[i]);
+                 mvwprintw(win, aliens[i].pos.y, aliens[i].pos.x, "O");
+                    mvwprintw(win, aliens[i].pos.y, aliens[i].pos.x, "I");
             }
             printBullet(win, bomb[i]);
         }
@@ -382,18 +389,11 @@ void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) 
         }
         wmove(win, Y_HSEPARATOR,0);
         whline(win, ACS_HLINE, p.x);
-        
+       
         gameStatus = isGameOver(allyShip.health, alienAllyCollision, nAliensAlive);
         wrefresh(win);
     } while (gameStatus == CONTINUE);
-    
-    switch(gameStatus){
-        case VICTORY:
-            break;
-        case DEFEAT:
-            //TODO stampa di sconfitta
-            break;
-    }
+    return gameStatus;
 }
 
 /**
@@ -583,4 +583,119 @@ int getMaxHealth(Difficulty difficultyMode){
  */
 int getDelay(Difficulty difficultyMode){
     return difficultyMode == EASY ? DELAY_ALIEN_EASY : DELAY_ALIEN_HARD;
+}
+
+/**
+ * @brief Procedura che si occupa di stampare il messaggio di vittoria o sconfitta a fine partita
+ * 
+ * @param win 
+ * @param p 
+ * @param gameStatus 
+ */
+void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
+    wclear(win);
+    int x = divideByTwo(p.x), y = divideByTwo(p.y);
+    int i,j;
+    
+    switch(gameStatus){
+
+        // victory
+        case VICTORY:
+            char winPrint[CUP_ROWS][CUP_COLS] = {"","","","","","","","","","",""};
+
+            for(i = 0; i < CUP_ROWS; i++){
+                switch (i) {
+                    case 0:
+                        strcat(winPrint[i], CUP1);
+                        break;
+                    case 1:
+                        strcat(winPrint[i], CUP2);
+                        break;
+                    case 2:
+                        strcat(winPrint[i], CUP3);
+                        break;
+                    case 3:
+                        strcat(winPrint[i], CUP4);
+                        break;
+                    case 4:
+                        strcat(winPrint[i], CUP5);
+                        break;
+                    case 5:
+                        strcat(winPrint[i], CUP6);
+                        break;
+                    case 6:
+                        strcat(winPrint[i], CUP7);
+                        break;
+                    case 7:
+                        strcat(winPrint[i], CUP8);
+                        break;
+                    case 8:
+                        strcat(winPrint[i], CUP9);
+                        break;
+                    case 9:
+                        strcat(winPrint[i], CUP10);
+                        break;
+                    case 10:
+                        strcat(winPrint[i], CUP11);
+                        break;
+                }
+            }
+
+            for(i=0;i<CUP_ROWS;i++){
+                mvwprintw(win, y+i-(CUP_COLS/2), x-(CUP_ROWS/2), winPrint[i]);
+            }
+            break;
+
+        // defeat
+        case DEFEAT:
+            char defeatPrint[FACE_ROWS][FACE_COLS] = {"","","","","","","","","",""};
+
+            for(i = 0; i < FACE_ROWS; i++){
+                switch (i) {
+                    case 0:
+                        strcat(defeatPrint[i], FACE1);
+                        break;
+                    case 1:
+                        strcat(defeatPrint[i], FACE2);
+                        break;
+                    case 2:
+                        strcat(defeatPrint[i], FACE3);
+                        break;
+                    case 3:
+                        strcat(defeatPrint[i], FACE4);
+                        break;
+                    case 4:
+                        strcat(defeatPrint[i], FACE5);
+                        break;
+                    case 5:
+                        strcat(defeatPrint[i], FACE6);
+                        break;
+                    case 6:
+                        strcat(defeatPrint[i], FACE7);
+                        break;
+                    case 7:
+                        strcat(defeatPrint[i], FACE8);
+                        break;
+                    case 8:
+                        strcat(defeatPrint[i], FACE9);
+                        break;
+                    case 9:
+                        strcat(defeatPrint[i], FACE10);
+                        break;
+                }
+            }
+
+            for(i=0;i<FACE_ROWS;i++){
+                mvwprintw(win, y+i-(FACE_ROWS/2), x-(FACE_COLS/2), defeatPrint[i]);
+            }
+            break;
+    }
+    
+    i = 5;
+    while(i>0){
+        mvwprintw(win, p.y-1, divideByTwo(p.x) - divideByTwo(sizeof(BACK_TO_MAIN_MENU)), BACK_TO_MAIN_MENU, i);
+        wrefresh(win);
+        usleep(1000000);
+        i--;
+    }
 }

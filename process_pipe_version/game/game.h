@@ -14,7 +14,7 @@
 #define DIM_PIPE 2
 #define BLANK_SPACES_STARSHIP "      "
 #define MAX_BULLETS_ACTIVE 2
-#define BULLET_PACE 4
+#define BULLET_PACE 2
 #define NO_HEALTH_REMAINING 0
 
 /* MACRO PER GLI ALIENI */
@@ -48,6 +48,35 @@
 #define NUMBER_ENEMY_SHIPS_HARD 9
 #define DELAY_ALIEN_HARD 400000
 
+#define CUP1  "     _|_     "
+#define CUP2  "     | |     "
+#define CUP3  "|-----+-----|"
+#define CUP4  "|    HAI    |"
+#define CUP5  "|   VINTO   |"
+#define CUP6  " '---------' "
+#define CUP7  "  \\       /  "
+#define CUP8  "   '.   .'   "
+#define CUP9  "     | |     "
+#define CUP10 "    .' '.    "
+#define CUP11 "   _|___|_   "
+
+#define CUP_ROWS 11
+#define CUP_COLS 14
+
+#define FACE1 "    .--------.    "
+#define FACE2 "  .'          '.  "
+#define FACE3 " /   O      O   \\ "
+#define FACE4 ":           `    :"
+#define FACE5 "|                | "
+#define FACE6 ":    .------.    : "
+#define FACE7 " \\  '        '  / "
+#define FACE8 "  '.          .'  "
+#define FACE9 "    '-......-'    "
+#define FACE10 "    HAI PERSO     "
+
+#define FACE_ROWS 10
+#define FACE_COLS 21
+#define BACK_TO_MAIN_MENU "Ritorno al menu principale tra: %d"
 void mainGame(WINDOW* win, Point p, Difficulty difficultyMode);
 void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens);
 void mountainsBgEffect(WINDOW* win, Point p, int timer);
@@ -55,7 +84,7 @@ void allyShipController(WINDOW* win, Point p, int pipeOut);
 void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode);
 void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut);
 void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut, Difficulty difficultyMode);
-void printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode);
+EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode);
 bool removeObject (Object array[], int size, pid_t pidObj);
 EndGame isGameOver(int healthAllyShip, bool alienAllyCollision, int nAliensAlive);
 void printStarShip (WINDOW* win, Point p, Object ship);
@@ -67,3 +96,4 @@ void endGame(pid_t aliens[], pid_t allyShip, Difficulty difficultyMode);
 int getMaxAlien(Difficulty difficultyMode);
 int getMaxHealth(Difficulty difficultyMode);
 int getDelay(Difficulty difficultyMode);
+void endGamePrint(WINDOW* win, Point p, EndGame gameStatus);
