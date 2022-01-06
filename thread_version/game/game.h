@@ -30,7 +30,8 @@
 
 #define TEXT_HUD_POS_Y 2
 #define HEALTH_BAR_POS_X 2
-#define NUMBER_ALIENS_BAR_POS_X 40
+#define TIMER_BAR_POS_X 40
+#define NUMBER_ALIENS_BAR_POS_X 60
 #define HEALTH_TEXT_HUD "Vite rimanenti: "
 #define HEALTH_SPACE_HUD "         "
 #define ALIENS_TEXT_HUD "Aliens remaining: %d"
@@ -66,30 +67,27 @@
 #define FACE2 "  .'          '.  "
 #define FACE3 " /   O      O   \\ "
 #define FACE4 ":           `    :"
-#define FACE5 "|                |"
-#define FACE6 ":    .------.    :"
+#define FACE5 "|                | "
+#define FACE6 ":    .------.    : "
 #define FACE7 " \\  '        '  / "
 #define FACE8 "  '.          .'  "
 #define FACE9 "    '-......-'    "
-#define FACE10 "                  "
-#define FACE11 "    HAI PERSO     "
+#define FACE10 "    HAI PERSO     "
 
-#define FACE_ROWS 11
-#define FACE_COLS 19
-
+#define FACE_ROWS 10
+#define FACE_COLS 21
 #define BACK_TO_MAIN_MENU "Ritorno al menu principale tra: %d"
 void mainGame(WINDOW* win, Point p, Difficulty difficultyMode);
-void hudGame(WINDOW* win, Point p, int allyShipHealth, int nAliens);
-void mountainsBgEffect(WINDOW* win, Point p, int timer);
-void allyShipController(WINDOW* win, Point p, int pipeOut);
+void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens);
+void* allyShipController(void* arg);
 void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode);
 void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut);
 void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut, Difficulty difficultyMode);
-EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode);
+void* printObjects (void* arg);
 bool removeObject (Object array[], int size, pid_t pidObj);
 EndGame isGameOver(int healthAllyShip, bool alienAllyCollision, int nAliensAlive);
 void printStarShip (WINDOW* win, Point p, Object ship);
-void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
+void moveAllyShip (WINDOW* win, Point p, int* isBulletShot);
 void printBullet (WINDOW* win, Object bullet);
 bool checkPos (Point p, int yPos, int size);
 void checkWindowCollision(WINDOW* win, Point p, Object* obj);
@@ -98,3 +96,7 @@ int getMaxAlien(Difficulty difficultyMode);
 int getMaxHealth(Difficulty difficultyMode);
 int getDelay(Difficulty difficultyMode);
 void endGamePrint(WINDOW* win, Point p, EndGame gameStatus);
+
+void writeIntoBuffer(Object newObj);
+Object readFromBuffer();
+void keyPadSelectorThread(WINDOW *win, int min_choice, int max_choice, int input, int* counter);
