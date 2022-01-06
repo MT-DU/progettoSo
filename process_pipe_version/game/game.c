@@ -322,15 +322,11 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
                     allyShip = obj;
                     allyShip.health = allyShipHealth;
                     hudGame(win, p, allyShip.health, timer, nAliensAlive);
-                    //mvwprintw(win, obj.pos.y+3, obj.pos.x, "O"); TODO
-                    //mvwprintw(win, obj.pos.y, obj.pos.x+7, "I");
                     printStarShip(win, p, allyShip);
                     break;
                 case BULLET_TYPE:
                     bullets[obj.idObj] = obj;
-                    //mvwprintw(win, obj.idObj, 50, "proiettile %d: pos(%d, %d)", obj.idObj, bullets[obj.idObj].pos.x, bullets[obj.idObj].pos.y);
                     for(i=0; i<getMaxAlien(difficultyMode); i++){
-                        //mvwprintw(win, i, 1, "alieno %d: pos(%d, %d)", i, aliens[i].pos.x, aliens[i].pos.y);
                         if(aliens[i].pid != UNDEFINED_PID && checkAlienBulletCollision(aliens[i].pos, bullets[obj.idObj].pos)){
                             aliensHealth[i]--;
                             aliens[i].health = aliensHealth[i];
@@ -378,8 +374,6 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
         for(i = 0; i<getMaxAlien(difficultyMode); i++){  
             if(aliens[i].pid != UNDEFINED_PID){
                 printStarShip(win, p, aliens[i]);
-                 mvwprintw(win, aliens[i].pos.y, aliens[i].pos.x, "O");
-                    mvwprintw(win, aliens[i].pos.y, aliens[i].pos.x, "I");
             }
             printBullet(win, bomb[i]);
         }
