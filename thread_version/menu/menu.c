@@ -123,7 +123,7 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
         switch (counter) {
             case PLAY_GAME_NUMBER:
                 wclear(win);
-                mainGame(win, max_res, *difficultyMode);
+                mainGame(win, *difficultyMode);
                 fflush(stdin);
                 break;
             case MODE_GAME_NUMBER:

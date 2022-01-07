@@ -258,7 +258,6 @@ void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut, Difficult
         usleep(50000);
         write(pipeOut, &bomb, sizeof(Object));
     }
-    mvwaddch(win, bomb.pos.y, bomb.pos.x, BLANK_SPACE);
     _exit(SIGUSR2);
 }
 
@@ -342,8 +341,16 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
             if(aliens[i].pid != UNDEFINED_PID){
                 printStarShip(win, p, aliens[i]);
             }
-            printBullet(win, bomb[i]);
+            if(bomb[i].pid != UNDEFINED_PID){
+                printBullet(win, bomb[i]);
+            }
         }
+
+        for(i=Y_HSEPARATOR;i<p.y;i++){
+            mvwaddch(win, i, 0, BLANK_SPACE);
+        }
+
+        
         
         if(firstKill){
             nAliensAlive = countObjects(aliens, getMaxAlien(difficultyMode));
