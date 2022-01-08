@@ -42,13 +42,12 @@ TODO:
   deve essere gestito dal processo checkCollision, ciò implica che dobbiamo mettere la read e la write in ogni funzione, anche quelle figlie generatrici di oggetti.
 
 COLLISIONI:
-- ALLY    ->  ENEMY         (entrambi perdono una vita)
+- ALLY    ->  ENEMY         (persa la partita)
               BOMB          (ally perde una vita e muore processo bomba)
 
 - ENEMY   ->  BULLET        (enemy perde una vita e muore processo bullet)
               MURO_UP&DOWN  (rimbalzo)
               MURO_SX       (ally perde una vita)
-              ENEMY         (rimbalzano entrambi)
 
 - BULLET  ->  MURO_UP&DOWN  (rimbalzo)
               BOMB          (entrambi i processi muoiono)

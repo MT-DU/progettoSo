@@ -16,6 +16,7 @@
 #define OUTER_STARSHIP 2
 #define STARSHIP_SIZE 3
 #define ALLY_BORDER_SPACE 3
+#define CLEAN_BULLET_AREA 5
 
 #define ROWS_ALIEN 3
 #define COLS_ALIEN 3
@@ -30,13 +31,48 @@
 #define MAX_RAND 100
 #define BLANK_SPACE ' '
 
+#define ENTITY_TYPES 5
+#define MAX_ENTITY_ACTIVE 5
+#define UNDEFINED_TID 0
+#define OBJ_ALIVE 100
+#define OBJ_DEAD 104
+
+#define CUP1  "     _|_     "
+#define CUP2  "     | |     "
+#define CUP3  "|-----+-----|"
+#define CUP4  "|    HAI    |"
+#define CUP5  "|   VINTO   |"
+#define CUP6  " '---------' "
+#define CUP7  "  \\       /  "
+#define CUP8  "   '.   .'   "
+#define CUP9  "     | |     "
+#define CUP10 "    .' '.    "
+#define CUP11 "   _|___|_   "
+
+#define CUP_ROWS 11
+#define CUP_COLS 14
+
+#define FACE1 "    .--------.    "
+#define FACE2 "  .'          '.  "
+#define FACE3 " /   O      O   \\ "
+#define FACE4 ":           `    :"
+#define FACE5 "|                | "
+#define FACE6 ":    .------.    : "
+#define FACE7 " \\  '        '  / "
+#define FACE8 "  '.          .'  "
+#define FACE9 "    '-......-'    "
+#define FACE10 "                  "
+#define FACE11 "    HAI PERSO     "
+
+#define FACE_ROWS 11
+#define FACE_COLS 21
+
+#define BACK_TO_MAIN_MENU "Ritorno al menu principale tra: %d"
+
 typedef enum {
     ALLY_SHIP_TYPE, ENEMY_SHIP_TYPE, BULLET_TYPE, BOMB_TYPE, UNDEFINED
 } TypeObject;
 
-#define ENTITY_TYPES 5
-#define MAX_ENTITY_ACTIVE 5
-#define UNDEFINED_PID -2
 typedef enum {
     UP_DIRECTION, DOWN_DIRECTION
 } Direction;
@@ -49,18 +85,21 @@ typedef enum{
     EASY, HARD, CUSTOM
 } Difficulty;
 
+typedef enum{
+    LOW = 1, MEDIUM, FULL
+} Health;
+
 typedef struct {
     Point pos;
-    pid_t pid;
+    int tid;
     TypeObject typeObject;
     Direction direction;
-    int health;
+    Health health;
     int idObj;
 } Object;
 
 void objectArrayInitializer (Object array[], int size);
 bool addObject (Object array[], int size, Object newObj);
-bool removeObject (Object array[], int size, pid_t pidObj);
 bool positionEquals(Point pos1, Point pos2);
 void initializeArray(int array[], int size, int value);
 
@@ -73,3 +112,4 @@ bool checkAllyAlienCollision (Point pos1);
 int countObjects(Object array[], int size);
 
 void clearObjects (WINDOW* win, Point p, Object obj);
+void endGamePrint(WINDOW* win, Point p, EndGame gameStatus);

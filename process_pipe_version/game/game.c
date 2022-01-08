@@ -349,14 +349,11 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
         for(i=Y_HSEPARATOR;i<p.y;i++){
             mvwaddch(win, i, 0, BLANK_SPACE);
         }
-
-        
         
         if(firstKill){
             nAliensAlive = countObjects(aliens, getMaxAlien(difficultyMode));
         }
-        wmove(win, Y_HSEPARATOR,0);
-        whline(win, ACS_HLINE, p.x);
+        
        
         gameStatus = isGameOver(allyShip.health, alienAllyCollision, nAliensAlive);
         wrefresh(win);
