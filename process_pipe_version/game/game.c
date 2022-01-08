@@ -68,6 +68,8 @@ void hudGame(WINDOW* win, Point p, int allyShipHealth, int nAliens){
     pickColor(win, PAIR_COLOR_ALIENS_REMAINING);
     mvwprintw(win, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X, ALIENS_TEXT_HUD, nAliens);
     turnOffColor(win, PAIR_COLOR_ALIENS_REMAINING);
+    wmove(win, Y_HSEPARATOR, 0);
+    whline(win, ACS_HLINE, p.x);
 }
 
 /**
@@ -288,6 +290,7 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
                     allyShip = obj;
                     allyShip.health = allyShipHealth;
                     hudGame(win, p, allyShip.health, nAliensAlive);
+                    
                     printStarShip(win, p, allyShip);
                     break;
                 case BULLET_TYPE:
@@ -354,7 +357,7 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
             nAliensAlive = countObjects(aliens, getMaxAlien(difficultyMode));
         }
         
-       
+        
         gameStatus = isGameOver(allyShip.health, alienAllyCollision, nAliensAlive);
         wrefresh(win);
     } while (gameStatus == CONTINUE);
