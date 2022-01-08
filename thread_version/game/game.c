@@ -94,8 +94,6 @@ void hudGame(int allyShipHealth, int nAliens){
     pickColor(winT, PAIR_COLOR_ALIENS_REMAINING);
     mvwprintw(winT, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X, ALIENS_TEXT_HUD, nAliens);
     turnOffColor(winT, PAIR_COLOR_ALIENS_REMAINING);
-    wmove(winT, Y_HSEPARATOR, 0);
-    whline(winT, ACS_HLINE, p.x);
 }
 
 /**
@@ -333,7 +331,8 @@ EndGame printObjects () {
                 mvwaddch(winT, i, p.x-1, BLANK_SPACE);
             }
 
-            
+            wmove(winT, Y_HSEPARATOR, 0);
+            whline(winT, ACS_HLINE, p.x);
 
             wrefresh(winT);
         }
