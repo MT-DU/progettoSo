@@ -50,10 +50,9 @@ void mainGame(WINDOW* win, Point p, Difficulty difficultyMode){
  * @param win 
  * @param p 
  * @param allyShipHealth 
- * @param timer 
  * @param nAliens 
  */
-void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens){
+void hudGame(WINDOW* win, Point p, int allyShipHealth, int nAliens){
     
     int i;
     int length = strlen(HEALTH_TEXT_HUD)+PASSO;
@@ -66,41 +65,11 @@ void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens){
         mvwprintw(win, TEXT_HUD_POS_Y, healthPosX+i*3, "<3 ");
     }
     turnOffColor(win, PAIR_COLOR_HEART);
-    //mvwprintw(win, TEXT_HUD_POS_Y, TIMER_BAR_POS_X, "Timer: %d", timer);
     pickColor(win, PAIR_COLOR_ALIENS_REMAINING);
     mvwprintw(win, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X, ALIENS_TEXT_HUD, nAliens);
     turnOffColor(win, PAIR_COLOR_ALIENS_REMAINING);
-}
-/**
- * @brief procedura che permette di dare un effetto grafico nello sfondo
- * 
- * @param win 
- * @param p 
- */
-void mountainsBgEffect(WINDOW* win, Point p, int timer){
-
-    char mountains[MOUNTAINS_ROWS][MOUNTAINS_COLS]= {
-                    {"        /\\    *      "},
-                    {"       /**\\       *  "},
-                    {"   *  /****\\         "},
-                    {"     /*/\\***\\        "},
-                    {"    / /**\\   \\  /\\   "},
-                    {"   / /    \\   \\/YY\\  "},
-                    {" /\\ /YYYYYY\\   \\YYY\\ "},
-                    {"/  \\YYYYYYYY\\YYY\\YYY\\"}
-                    };
-    int i, j, x = 0, y = 0;
-
-    while(x<p.x){
-        for(i=0;i<MOUNTAINS_ROWS;i++){
-            for(j=0;j<MOUNTAINS_COLS;j++){
-                mvwaddch(win, p.y-i, x+j, mountains[i][j]);
-                
-            }
-        }
-        x=+MOUNTAINS_COLS;
-    }
-    
+    wmove(win, Y_HSEPARATOR, 0);
+    whline(win, ACS_HLINE, p.x);
 }
 
 /**
@@ -309,7 +278,6 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
     objectArrayInitializer(bomb, NUMBER_ENEMY_SHIPS_HARD);
     objectArrayInitializer(aliens, NUMBER_ENEMY_SHIPS_HARD);
     int status, i, allyShipHealth = getMaxHealth(difficultyMode), aliensHealth[NUMBER_ENEMY_SHIPS_HARD], nAliensAlive = getMaxAlien(difficultyMode);
-    int timer = 0;
     bool takeHealth = false, alienAllyCollision = false, firstKill = false;
     EndGame gameStatus = CONTINUE;
     initializeArray(aliensHealth, NUMBER_ENEMY_SHIPS_HARD, MAX_HEALTH_ALIEN);
@@ -321,7 +289,8 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
                 case ALLY_SHIP_TYPE:
                     allyShip = obj;
                     allyShip.health = allyShipHealth;
-                    hudGame(win, p, allyShip.health, timer, nAliensAlive);
+                    hudGame(win, p, allyShip.health, nAliensAlive);
+                    
                     printStarShip(win, p, allyShip);
                     break;
                 case BULLET_TYPE:
@@ -332,7 +301,7 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
                             aliens[i].health = aliensHealth[i];
                             kill(bullets[obj.idObj].pid, SIGUSR1);
                             wclear(win);
-                            hudGame(win, p, allyShip.health, timer, nAliensAlive);
+                            hudGame(win, p, allyShip.health, nAliensAlive);
                             bullets[obj.idObj].pid = UNDEFINED_PID;
                             clearObjects(win, p, bullets[obj.idObj]);
                             if(aliens[i].health == NO_HEALTH_REMAINING){
@@ -375,15 +344,20 @@ EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMod
             if(aliens[i].pid != UNDEFINED_PID){
                 printStarShip(win, p, aliens[i]);
             }
-            printBullet(win, bomb[i]);
+            if(bomb[i].pid != UNDEFINED_PID){
+                printBullet(win, bomb[i]);
+            }
+        }
+
+        for(i=Y_HSEPARATOR;i<p.y;i++){
+            mvwaddch(win, i, 0, BLANK_SPACE);
         }
         
         if(firstKill){
             nAliensAlive = countObjects(aliens, getMaxAlien(difficultyMode));
         }
-        wmove(win, Y_HSEPARATOR,0);
-        whline(win, ACS_HLINE, p.x);
-       
+        
+        
         gameStatus = isGameOver(allyShip.health, alienAllyCollision, nAliensAlive);
         wrefresh(win);
     } while (gameStatus == CONTINUE);
@@ -592,9 +566,9 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
     int i,j;
     char winPrint[CUP_ROWS][CUP_COLS];
     char defeatPrint[FACE_ROWS][FACE_COLS];
+
     switch(gameStatus){
 
-        // victory
         case VICTORY:
 
             for(i = 0; i < CUP_ROWS; i++){
@@ -676,6 +650,9 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
                         break;
                     case 9:
                         strcat(defeatPrint[i], FACE10);
+                        break;
+                    case 10:
+                        strcat(defeatPrint[i], FACE11);
                         break;
                 }
             }

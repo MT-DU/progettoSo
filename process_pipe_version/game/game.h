@@ -30,8 +30,7 @@
 
 #define TEXT_HUD_POS_Y 2
 #define HEALTH_BAR_POS_X 2
-#define TIMER_BAR_POS_X 40
-#define NUMBER_ALIENS_BAR_POS_X 60
+#define NUMBER_ALIENS_BAR_POS_X 40
 #define HEALTH_TEXT_HUD "Vite rimanenti: "
 #define HEALTH_SPACE_HUD "         "
 #define ALIENS_TEXT_HUD "Aliens remaining: %d"
@@ -67,18 +66,20 @@
 #define FACE2 "  .'          '.  "
 #define FACE3 " /   O      O   \\ "
 #define FACE4 ":           `    :"
-#define FACE5 "|                | "
-#define FACE6 ":    .------.    : "
+#define FACE5 "|                |"
+#define FACE6 ":    .------.    :"
 #define FACE7 " \\  '        '  / "
 #define FACE8 "  '.          .'  "
 #define FACE9 "    '-......-'    "
-#define FACE10 "    HAI PERSO     "
+#define FACE10 "                  "
+#define FACE11 "    HAI PERSO     "
 
-#define FACE_ROWS 10
-#define FACE_COLS 21
+#define FACE_ROWS 11
+#define FACE_COLS 19
+
 #define BACK_TO_MAIN_MENU "Ritorno al menu principale tra: %d"
 void mainGame(WINDOW* win, Point p, Difficulty difficultyMode);
-void hudGame(WINDOW* win, Point p, int allyShipHealth, int timer, int nAliens);
+void hudGame(WINDOW* win, Point p, int allyShipHealth, int nAliens);
 void mountainsBgEffect(WINDOW* win, Point p, int timer);
 void allyShipController(WINDOW* win, Point p, int pipeOut);
 void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode);
