@@ -109,7 +109,7 @@ void hudGame(int allyShipHealth, int nAliens){
 
     // Stampa del numero di alieni rimanenti
     pickColor(winT, PAIR_COLOR_ALIENS_REMAINING);
-    mvwprintw(wint, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X + strlen(ALIENS_TEXT_HUD)-1, BLANK_SPACES_ALIEN);
+    mvwprintw(winT, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X + strlen(ALIENS_TEXT_HUD)-1, BLANK_SPACES_ALIEN);
     mvwprintw(winT, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X, ALIENS_TEXT_HUD, nAliens);
     turnOffColor(winT, PAIR_COLOR_ALIENS_REMAINING);
 }
