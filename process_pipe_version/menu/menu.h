@@ -27,9 +27,9 @@
 #define PRINT_MENU_MAIN 0 
 #define LABEL_MAIN_MENU {{PLAY_GAME},{MODE_GAME},{QUIT_GAME}}
 #define EXIT_LABEL_HUD "Press q to exit the game"
-#define EASY_MODE_SELECTED "YOU'LL PLAY IN: EASY MODE"
-#define HARD_MODE_SELECTED "YOU'LL PLAY IN: HARD MODE"
-#define CUSTOM_MODE_SELECTED "YOU'LL PLAY IN: CUSTOM MODE"
+#define EASY_MODE_SELECTED "Current Game Mode: Easy"
+#define HARD_MODE_SELECTED "Current Game Mode: Hard"
+#define CUSTOM_MODE_SELECTED "Current Game Mode: Custom"
 
 // Macro relative al menu' della difficolta'
 #define EASY_MODE_NUMBER 0

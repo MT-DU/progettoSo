@@ -186,7 +186,7 @@ void gameMode (WINDOW* win, Point max_res, DifficultyType* difficultyMode) {
         keyPadSelector(EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
         selectDifficulty(win, max_res, getInput, counter, difficultyMode, &isPicked);
         wrefresh(win);
-        /* Se la difficolta e' stata selezionata, allora puo' uscire dal ciclo */
+        // Se la difficolta e' stata selezionata, allora puo' uscire dal ciclo
     } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q && !isPicked);
 }
 
@@ -223,6 +223,13 @@ void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Diffic
     }
 }
 
+/**
+ * @brief Procedura che stampa a schermo l'attuale difficolta' del gioco
+ * 
+ * @param win Finestra su cui stampare
+ * @param p Risoluzione della finestra
+ * @param difficulty Difficolta' selezionata
+ */
 void difficultySelected(WINDOW* win, Point p, DifficultyType difficulty){
     switch (difficulty.type)
     {
@@ -240,6 +247,13 @@ void difficultySelected(WINDOW* win, Point p, DifficultyType difficulty){
     }
 }
 
+/**
+ * @brief Procedura che permette di scegliere la difficolta' da parte dell'utente in modo personalizzato
+ * 
+ * @param win Finestra su cui stampare il menu'
+ * @param max_res Risoluzione della finestra
+ * @param difficultyMode Difficolta' scelta dall'utente
+ */
 void customDifficulty(WINDOW* win, Point max_res, DifficultyType* difficultyMode){
     int getInput;
     do{
@@ -249,24 +263,37 @@ void customDifficulty(WINDOW* win, Point max_res, DifficultyType* difficultyMode
         getInput = wgetch(win);
         keyPadSelector(MIN_ALIENS, MAX_ALIENS, getInput, &difficultyMode->numAliens);
         wrefresh(win);
-        /* Se la difficolta e' stata selezionata, allora puo' uscire dal ciclo */
+        // Se la difficolta e' stata selezionata, allora puo' uscire dal ciclo
         wtimeout(win, 10);
     } while(getInput != ASCII_CODE_ENTER);
 }
 
+/**
+ * @brief Procedura che permette di stampare a schermo un menu' per la scelta della difficolta' del gioco
+ * 
+ * @param win Finestra su cui stampare il menu'
+ * @param max_res Risoluzione della finestra
+ * @param numAliens Numero di alieni da mostrare
+ */
 void printCustomMenu(WINDOW* win, Point max_res, int numAliens){
     int longestStringDivided = divideByTwo(strlen(CUSTOM_MODE_PRINT_HINT)), i;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
-    int y = yDivided + SPACE_BETWEEN_CHOICES;
     int x = xDivided - divideByTwo(strlen(CUSTOM_MODE_PRINT));
-    for(i=yDivided;i<=y+1;i++){
-        mvwaddch(win, i, xDivided - longestStringDivided -1, '|');
-        mvwaddch(win, i, xDivided + longestStringDivided + 1, '|');
-    }
-    for(i=xDivided - longestStringDivided;i<(xDivided + longestStringDivided + 1);i++){
-        mvwaddch(win, yDivided-1, i, '_');
-        mvwaddch(win, y+1, i, '_');
-    }
-    mvwprintw(win, yDivided, xDivided - longestStringDivided, CUSTOM_MODE_PRINT_HINT);
-    mvwprintw(win, y, x, CUSTOM_MODE_PRINT, numAliens);
+
+    int x1, x2, y1, y2;
+    x1 = xDivided - longestStringDivided - CUSTOM_MODE_NUMBER;
+    x2 = xDivided + longestStringDivided + CUSTOM_MODE_NUMBER;
+    y1 = yDivided - SPACE_BETWEEN_CHOICES - PASSO;
+    y2 = yDivided + SPACE_BETWEEN_CHOICES + PASSO;
+    mvwhline(win, y1, x1, 0, x2-x1);
+    mvwhline(win, y2, x1, 0, x2-x1);
+    mvwvline(win, y1, x1, 0, y2-y1);
+    mvwvline(win, y1, x2, 0, y2-y1);
+    mvwaddch(win, y1, x1, );
+    mvwaddch(win, y2, x1, ACS_LLCORNER);
+    mvwaddch(win, y1, x2, ACS_URCORNER);
+    mvwaddch(win, y2, x2, ACS_LRCORNER);
+
+    mvwprintw(win, yDivided - PASSO, xDivided - longestStringDivided, CUSTOM_MODE_PRINT_HINT);
+    mvwprintw(win, yDivided + PASSO, x, CUSTOM_MODE_PRINT, numAliens);
 }

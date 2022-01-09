@@ -155,7 +155,7 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Diffic
 
     while(true){
         while(write(pipeOut, &alien, sizeof(Object)) == -1);
-        /* SPOSTAMENTO SINCRONO DEGLI ALIENI */
+        // Spostamento dell'alieno
         switch(alien.direction){
             case UP_DIRECTION:
                 if(numSpostamenti == MIN_MOVE_ALIEN){
