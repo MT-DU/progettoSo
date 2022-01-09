@@ -38,6 +38,7 @@ void mainMenu(WINDOW *win, Point max_res){
     int getInput, counter = 0;
     char vetLabelMenu[NUMBER_CHOICES][DIM_MAX_PRINT_MENU] = LABEL_MAIN_MENU;
     Difficulty difficultyMode = EASY;
+    int isTutorialShowed = false;
     keypad(win, true); 
     cbreak();
     do{
@@ -46,7 +47,7 @@ void mainMenu(WINDOW *win, Point max_res){
         printMenu(win, max_res, counter, NUMBER_CHOICES, vetLabelMenu);
         getInput = wgetch(win);
         keyPadSelector(PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
-        selectOptionMainMenu(win, max_res, &getInput, counter, &difficultyMode);
+        selectOptionMainMenu(win, max_res, &getInput, counter, &difficultyMode, &isTutorialShowed);
         wrefresh(win);
     } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q); // q oppure Q sono i tasti per uscire
 }
@@ -105,7 +106,6 @@ void printLogo (WINDOW* win, Point max_res) {
         mvwprintw(win, i+1, divideByTwo(max_res.x) - halfLenLogo, logoCompleto[i]);
     }
 }
-
 /**
  * @brief Procedura che gestisce la selezione dell'utente nel main menu'
  * 
@@ -115,16 +115,19 @@ void printLogo (WINDOW* win, Point max_res) {
  * @param counter Opzione selezionata dall'utente
  * @param difficultyMode Difficolta modificabile dall'utente
  */
-void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode){
-
+void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode, int* isTutorialShowed){
     int i, y, x;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
-    if((*input) == ASCII_CODE_ENTER){ // se l'utente ha premuto invio allora viene selezionata l'opzione
+    if(*input == ASCII_CODE_ENTER){ // se l'utente ha premuto invio allora viene selezionata l'opzione
         switch (counter) {
             case PLAY_GAME_NUMBER: // seleziona la modalita' di gioco ed avvia il gioco
                 wclear(win);
+                if(!(*isTutorialShowed)){
+                    tutorial(win, max_res);
+                    wclear(win);
+                    *isTutorialShowed = true;
+                }
                 mainGame(win, *difficultyMode);
-                fflush(stdin);
                 break;
             case MODE_GAME_NUMBER: // seleziona la modalita' di gioco e richiama la procedura per modificare la modalita' di gioco
                 wclear(win);
@@ -132,7 +135,7 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
                 gameMode(win, max_res, difficultyMode);
                 break;
             case QUIT_GAME_NUMBER: // esce dal gioco
-                (*input) = ASCII_CODE_Q;
+                *input = ASCII_CODE_Q;
                 break;
         }
     }
@@ -147,14 +150,38 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
 void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode) {
     int i, getInput, counter = 0;
     bool isPicked = false;
-    char vetLabelMenu[NUMBER_CHOICES][DIM_MAX_PRINT_MENU] = LABEL_GAME_MODE_MENU;
+    char vetLabelMenu[NUMBER_CHOICES_GAME_MODE][DIM_MAX_PRINT_MENU] = LABEL_GAME_MODE_MENU;
     do{
-        printMenu(win, max_res, counter, NUMBER_CHOICES, vetLabelMenu);
+        printMenu(win, max_res, counter, NUMBER_CHOICES_GAME_MODE, vetLabelMenu);
         getInput = wgetch(win);
-        keyPadSelector(EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
+        keyPadSelector(EASY_MODE_NUMBER, HARD_MODE_NUMBER, getInput, &counter);
         selectDifficulty(win, max_res, getInput, counter, difficultyMode, &isPicked);
         wrefresh(win);
     } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q && !isPicked);
+}
+
+/**
+ * @brief Procedura che stampa a schermo una breve introduzione del gioco
+ * 
+ * @param win Finestra su cui stampare
+ * @param max_res Risoluzione della finestra
+ */
+void tutorial (WINDOW* win, Point max_res) {
+    do{
+        mvwprintw(win, divideByTwo(max_res.y)-10, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_1)), INTRO_1);
+        mvwprintw(win, divideByTwo(max_res.y)-8, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_2)), INTRO_2);
+        mvwprintw(win, divideByTwo(max_res.y)-6, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_3)), INTRO_3);
+        mvwprintw(win, divideByTwo(max_res.y)-4, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_4)), INTRO_4);
+        mvwprintw(win, divideByTwo(max_res.y)-2, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_5)), INTRO_5);
+        mvwprintw(win, divideByTwo(max_res.y)  , divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_6)), INTRO_6);
+        mvwprintw(win, divideByTwo(max_res.y)+2, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_7)), INTRO_7);
+        mvwprintw(win, divideByTwo(max_res.y)+4, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_8)), INTRO_8);
+        pickColor(win, PAIR_COLOR_LOGO);
+        mvwprintw(win, max_res.y-4, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_9)), INTRO_9);
+        turnOffColor(win, PAIR_COLOR_LOGO);
+        mvwprintw(win, max_res.y-2, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_10)), INTRO_10);
+        wtimeout(win, 1);
+    }  while(wgetch(win)!=ASCII_CODE_ENTER);  
 }
 
 /**
@@ -180,11 +207,6 @@ void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Diffic
                 (*difficultyMode) = HARD;
                 *isPicked = true;
                 break;
-            case CUSTOM:
-                (*difficultyMode) = CUSTOM;
-                *isPicked = true;
-                break;
         }
     }
 }
-

@@ -10,5 +10,6 @@ typedef enum {
 #define TYPE_EXCEPTION_PIPE_CREATION_FAILURE_TEXT "Errore nella creazione della pipe!"
 #define TYPE_EXCEPTION_PROCESS_CREATION_FAILURE_TEXT "Errore nella creazione del processo!"
 
+
 // Dichiarazione delle funzioni e procedure utilizzate 
 void printExceptions(int typeException);

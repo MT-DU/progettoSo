@@ -49,15 +49,19 @@ typedef enum {
 } EndGame;
 
 typedef enum{
-    EASY, HARD, CUSTOM
+    EASY, HARD
 } Difficulty;
+
+typedef enum{
+    LOW = 1, MEDIUM, FULL
+} Health;
 
 typedef struct {
     Point pos;
     pid_t pid;
     TypeObject typeObject;
     Direction direction;
-    int health;
+    Health health;
     int idObj;
 } Object;
 

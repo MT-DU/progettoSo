@@ -47,10 +47,15 @@ void printMenu (WINDOW* win, Point max_res, int selection, int row, char vetStri
         y = yDivided + SPACE_BETWEEN_CHOICES * selection;
         x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
         mvwaddch(win, y, x, SELECTOR);
-        
+        if(i == selection){
+            pickColor(win, PAIR_COLOR_LOGO);
+        }
         y = yDivided + SPACE_BETWEEN_CHOICES*i;
         x = xDivided - divideByTwo(strlen(vetStringsMenu[i]));
         mvwprintw(win, y, x, vetStringsMenu[i]);
+        if(i == selection){
+            turnOffColor(win, PAIR_COLOR_LOGO);
+        }
     }
     
     refresh();

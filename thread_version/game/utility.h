@@ -93,8 +93,6 @@ typedef struct {
 } Object;
 
 // Dichiarazione delle funzioni e procedure utilizzate 
-void objectArrayInitializer (Object array[], int size);
-void initializeArray(int array[], int size, int value);
 bool checkAllyBombCollision(Point pos1, Point pos2);
 bool checkAlienBulletCollision (Point pos1, Point pos2);
 bool checkAllyAlienCollision (Point pos1);

@@ -424,32 +424,30 @@ void printStarShip (WINDOW* win, Point p, Object ship) {
                 mvwaddch(win, ship.pos.y-DISTANCE_FROM_CENTER_ALIEN, ship.pos.x+i-2, BLANK_SPACE);
                 mvwaddch(win, ship.pos.y+DISTANCE_FROM_CENTER_ALIEN, ship.pos.x+i-2, BLANK_SPACE);
             }
+            char alienSpriteBigEnemy[ROWS_ALIEN][COLS_ALIEN] = ENEMYSHIP_LEVEL_TWO;
+            char alienSprite[ROWS_ALIEN][COLS_ALIEN] = ENEMYSHIP;
             
-            if(ship.health == MAX_HEALTH_ALIEN){ // Stampa degli alieni di primo livello
-                pickColor(win, PAIR_COLOR_ALIEN);
-                char alienSprite[ROWS_ALIEN][COLS_ALIEN] = ENEMYSHIP;
-                for(i=0;i<ROWS_ALIEN;i++){
-                    for(j=0;j<COLS_ALIEN;j++){
-                        y = ship.pos.y-divideByTwo(ALIEN_SIZE) + i;
-                        mvwaddch(win, y, ship.pos.x+j, alienSprite[i][j]);
+            for(i=0;i<ROWS_ALIEN;i++){
+                for(j=0;j<COLS_ALIEN;j++){
+                    y = ship.pos.y-divideByTwo(ALIEN_SIZE) + i;
+                    switch(ship.health){ // Personalizzazione della stampa dell'alieno in base alla sua vita
+                        case FULL:
+                            pickColor(win, PAIR_COLOR_ALIEN);
+                            mvwaddch(win, y, ship.pos.x+j, alienSprite[i][j]);
+                            turnOffColor(win, PAIR_COLOR_ALIEN);
+                            break;
+                        case MEDIUM:
+                            pickColor(win, PAIR_COLOR_ALIEN_HALF_HEALTH);
+                            mvwaddch(win, y, ship.pos.x+j, alienSpriteBigEnemy[i][j]);
+                            turnOffColor(win, PAIR_COLOR_ALIEN_HALF_HEALTH);
+                            break;
+                        case LOW:
+                            pickColor(win, PAIR_COLOR_ALIEN_LOW_HEALTH);
+                            mvwaddch(win, y, ship.pos.x+j, alienSpriteBigEnemy[i][j]);
+                            turnOffColor(win, PAIR_COLOR_ALIEN_LOW_HEALTH);
+                            break;
                     }
                 }
-                turnOffColor(win, PAIR_COLOR_ALIEN);
-            }else{ // Stampa degli alieni di secondo livello
-                if(ship.health == MAX_HEALTH_ALIEN -1){
-                    pickColor(win, PAIR_COLOR_ALIEN_HALF_HEALTH);
-                }else{
-                    pickColor(win, PAIR_COLOR_ALIEN_LOW_HEALTH);
-                }
-                char alienSprite[ROWS_ALIEN][COLS_ALIEN] = ENEMYSHIP_LEVEL_TWO;
-                for(i=0;i<ROWS_ALIEN;i++){
-                    for(j=0;j<COLS_ALIEN;j++){
-                        y = ship.pos.y-divideByTwo(ALIEN_SIZE) + i;
-                        mvwaddch(win, y, ship.pos.x+j, alienSprite[i][j]);
-                    }
-                }
-                turnOffColor(win, PAIR_COLOR_ALIEN_HALF_HEALTH);
-                turnOffColor(win, PAIR_COLOR_ALIEN_LOW_HEALTH);
             }
             break;
     }
@@ -492,7 +490,6 @@ void printBullet (WINDOW* win, Object bullet) {
  * @param isBulletShot Variabile usata per verificare se e' stato fatto uno sparo
  */
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot) {
-    keypad(win, TRUE);
     cbreak();
     wtimeout(win, 1);
     int arrow = wgetch(win);
@@ -500,7 +497,6 @@ void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot) {
         *isBulletShot = true;
     }
     keyPadSelector(Y_HSEPARATOR+STARSHIP_SIZE, p.y-STARSHIP_SIZE, arrow, yPos);
-    nocbreak();
 }
 
 /**

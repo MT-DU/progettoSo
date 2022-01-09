@@ -4,7 +4,6 @@ x Permettere all'utente di selezionare una difficoltà (maggiore velocità delle
 x implementare mini istruzioni di tutorial per come funziona il gioco
 
 - fare in modo che l'utente capisca se ha selezionato la modalità facile o difficile (attron)
-- modifica personalizzazione fede docet (vita a scelta e scroll tipo pokemon)
-- ottimizzazione del codice, aggiungere commenti
+x ottimizzazione del codice, aggiungere commenti
 - controllare scrittura e lettura su buffer vuoto/pieno
 - gestione errori thread

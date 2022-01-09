@@ -1,34 +1,6 @@
 #include "utility.h"
 
 /**
- * @brief Procedura che inizializza il tipo di oggetto e il tid degli elementi dell'array
- * 
- * @param array Array di oggetti da inizializzare 
- * @param size Dimensione dell'array
- */
-void objectArrayInitializer (Object array[], int size) {
-    int i;
-    for(i=0;i<size;i++){
-        array[i].typeObject = UNDEFINED;
-        array[i].tid = UNDEFINED_TID;
-    }
-}
-
-/**
- * @brief Procedura che popola un array di interi dato un value
- * 
- * @param array Array di interi da popolare
- * @param size Dimensione dell'array
- * @param value Valore da inserire nell'array
- */
-void initializeArray(int array[], int size, int value){
-    int i;
-    for(i = 0; i < size; i++){
-        array[i] = value;
-    }
-}
-
-/**
  * @brief Funzione per il check delle collisioni tra navicella alleata e bomba
  * 
  * @param pos1 Posizione della navicella alleata

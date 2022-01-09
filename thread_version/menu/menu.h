@@ -7,7 +7,7 @@
 #define ASCII_CODE_Q 81
 #define ASCII_CODE_ENTER 10
 #define NUMBER_CHOICES 3
-#define PRINT_NO_MENU 2
+#define NUMBER_CHOICES_GAME_MODE 2
 
 // Macro relative all'hud e al logo
 #define Y_HLINE 6
@@ -32,13 +32,24 @@
 // Macro relative al menu' della difficolta'
 #define EASY_MODE_NUMBER 0
 #define HARD_MODE_NUMBER 1
-#define CUSTOM_MODE_NUMBER 2
 #define EASY_MODE "Modalita' Facile"
 #define HARD_MODE "Modalita' Difficile"
-#define CUSTOM_MODE "Personalizza"
 #define PRINT_MENU_GAME_MODE 1 
-#define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
+#define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"
+
+// Macro relative alla schermata di introduzione
+#define SPACE_FROM_BORDER 5
+#define INTRO_1 "Welcome to Space Defender!"
+#define INTRO_2 "You can move the spaceship with the UP and DOWN arrow keys."
+#define INTRO_3 "You can shoot with the SPACE key."
+#define INTRO_4 "You can't have more than one pair of bullets on the screen."
+#define INTRO_5 "The enemy ships will shoot at you."
+#define INTRO_6 "If you are hit by an enemy bomb, you will lose a life."
+#define INTRO_7 "You win if you destroy all the enemy ships."
+#define INTRO_8 "You lose if you get to 0 lives or an enemy get to the starship column."
+#define INTRO_9 "Good luck! PRESS ENTER WHEN YOU'RE READY!"
+#define INTRO_10 "Made by Matteo Tuzi & Davide Uccheddu"
 
 // Dichiarazione delle funzioni e procedure utilizzate 
 void mainApp();
@@ -46,9 +57,7 @@ void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
 void hudMainMenu(WINDOW *win, Point max_res, int menu);
 void printLogo(WINDOW *win, Point max_res);
-void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode);
+void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode, int* isTutorialShowed);
 void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode);
 void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
-
-
-
+void tutorial (WINDOW* win, Point max_res);
