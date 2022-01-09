@@ -28,18 +28,19 @@
 #define PRINT_MENU_MAIN 0 
 #define LABEL_MAIN_MENU {{PLAY_GAME},{MODE_GAME},{QUIT_GAME}}
 #define EXIT_LABEL_HUD "Press q to exit the game"
+#define EASY_MODE_SELECTED "YOU'LL PLAY IN: EASY MODE"
+#define HARD_MODE_SELECTED "YOU'LL PLAY IN: HARD MODE"
 
 // Macro relative al menu' della difficolta'
 #define EASY_MODE_NUMBER 0
 #define HARD_MODE_NUMBER 1
-#define EASY_MODE "Modalita' Facile"
-#define HARD_MODE "Modalita' Difficile"
+#define EASY_MODE "Easy Mode"
+#define HARD_MODE "Hard Mode"
 #define PRINT_MENU_GAME_MODE 1 
 #define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"
 
 // Macro relative alla schermata di introduzione
-#define SPACE_FROM_BORDER 5
 #define INTRO_1 "Welcome to Space Defender!"
 #define INTRO_2 "You can move the spaceship with the UP and DOWN arrow keys."
 #define INTRO_3 "You can shoot with the SPACE key."
@@ -55,9 +56,10 @@
 void mainApp();
 void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
-void hudMainMenu(WINDOW *win, Point max_res, int menu);
+void hudMainMenu(WINDOW *win, Point max_res, int menu, Difficulty difficultyMode);
 void printLogo(WINDOW *win, Point max_res);
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode, int* isTutorialShowed);
+void tutorial (WINDOW* win, Point max_res);
 void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode);
 void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
-void tutorial (WINDOW* win, Point max_res);
+void difficultySelected(WINDOW* win, Point p, Difficulty difficulty);
