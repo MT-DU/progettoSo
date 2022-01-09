@@ -1,6 +1,7 @@
 #include "menu/menu.h"
 
+
 int main() {
-    mainApp();
+    mainApp(); // Chiamata alla funzione principale
     return 0;
 }

@@ -1,16 +1,9 @@
-
 IDEE:
-- Strutturare il gioco avendo 3 livelli, in cui cambia l'hud del livello, al 3° livello dopo i nemici classici spawna un boss
-- Creare un hud che dica il numero di vite, nemici rimanenti, timer della partita, creare paesaggio che dia senso di movimento
-x Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof )
-- I nemici dei livelli successivi (solo del 3°) usano bombe più grandi o sono più veloci
-- Ogni volta che superi un livello recuperi una vita nelle difficoltà più alte
-- Aggingere voce High score nel menù principale
+x Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof)
 - implementare ridimensionamento schermo dalle impostazioni
 x implementare mini istruzioni di tutorial per come funziona il gioco
-- implementare menù di pausa dentro al game (wait dei processi)
 
-- fare in modo che l'utente ha selezionato la modalità o difficile (attron)
+- fare in modo che l'utente capisca se ha selezionato la modalità facile o difficile (attron)
 - modifica personalizzazione fede docet (vita a scelta e scroll tipo pokemon)
 - ottimizzazione del codice, aggiungere commenti
 - controllare scrittura e lettura su buffer vuoto/pieno

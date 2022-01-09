@@ -1,28 +1,29 @@
 #include "game.h"
 
-Object* allyShipBuffer, *bullets, *aliens, *bombs;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_t tAllyShip, *tNAliens, *tNBombs, *tNBullets;
-int firstAlienKilled, isBulletShot, isBombShot, canShoot, *statusBullets, *statusAliens, *statusBombs, numAliens;
-WINDOW* winT;
-Point p;
-EndGame gameStatus = CONTINUE;
-Difficulty difficulty;
+// Dichiarazione delle variabili globali
+Object* allyShipBuffer, *bullets, *aliens, *bombs; // Variabili di tipo Object usate come buffer
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex per la sincronizzazione
+pthread_t tAllyShip, *tNAliens, *tNBombs, *tNBullets; // Thread per la gestione dei thread
+int firstAlienKilled, isBulletShot, isBombShot, canShoot, *statusBullets, *statusAliens, *statusBombs, numAliens; // Variabili di stato
+WINDOW* winT; // Finestra di stampa
+Point p; // Risoluzione della finestra
+EndGame gameStatus = CONTINUE; // Variabile usata per controllare lo stato del gioco
+Difficulty difficulty; // Variabile che indica la difficoltà del gioco
 
 /**
  * @brief Procedura principale da cui parte il gioco
  * 
- * @param win 
- * @param difficultyMode
+ * @param win Finestra di stampa
+ * @param difficultyMode Difficoltà del gioco
  */
 void mainGame(WINDOW* win, Difficulty difficultyMode){
     srand(time(NULL));
     int i, status;
+    void* id = malloc(sizeof(void*));
+    
+    // Inizializzazione delle variabili globali
     winT = win;
     getmaxyx(winT, p.y, p.x);
-    
-    /**inizializzazione variabili **/
-    void* id = malloc(sizeof(void*));
     gameStatus = CONTINUE;
     difficulty = difficultyMode;
     numAliens = getMaxAlien(difficultyMode);
@@ -31,7 +32,8 @@ void mainGame(WINDOW* win, Difficulty difficultyMode){
     statusBullets[UP_DIRECTION] = DEFAULT_VALUE;
     statusBullets[DOWN_DIRECTION] = DEFAULT_VALUE;
     firstAlienKilled = 0, isBulletShot = 0, isBombShot = 0, canShoot = 1;
-    /** creazione dei thread **/
+
+    // Creazione dei thread e uso della detach per liberare la memoria in caso di terminazione del thread
     pthread_create(&tAllyShip, NULL, allyShipController, NULL);
     pthread_detach(tAllyShip);
     for(i=0;i<numAliens;i++){
@@ -41,15 +43,19 @@ void mainGame(WINDOW* win, Difficulty difficultyMode){
         pthread_create(&tNAliens[i], NULL, enemyShipController, (void*) &arg[i]);
         pthread_detach(tNAliens[i]);
     }
-    /* Chiamata alla funzione che gestisce la stampa */
+
+    // Chiamata alla funzione che gestisce la stampa del gioco
     gameStatus = printObjects();
     
+    // Unlock del mutex per la sincronizzazione in caso sia lockato
     if(pthread_mutex_trylock(&mutex) == 0){
         pthread_mutex_unlock(&mutex);
     }
 
+    // Eliminazione del thread allyShip
     pthread_cancel(tAllyShip);
     
+    // Eliminazione dei thread alieni e bombe
     for(i=0;i<numAliens;i++){
         if(statusAliens[i] == OBJ_ALIVE){
             killThread(tNAliens, statusAliens, i);
@@ -59,24 +65,27 @@ void mainGame(WINDOW* win, Difficulty difficultyMode){
             killThread(tNBombs, statusBombs, i);
         }        
     }
+
+    // Eliminazione dei thread bullet
     for(i=0;i<NUMBER_BULLETS;i++){
         if(statusBullets[i] == OBJ_ALIVE){
             killThread(tNBullets, statusBullets, i);
         }
     }
     
+    // Eliminazione del mutex
     pthread_mutex_destroy(&mutex);
-    freeAll();
+    freeAll(); // Procedura che libera la memoria precedentemente allocata dinamicamente
 
     endGamePrint(winT, p, gameStatus);
     usleep(1000);
 }
 
 /**
- * @brief Procedura che visualizza la hud nella window
+ * @brief Procedura che visualizza l'hud del gioco
  * 
- * @param allyShipHealth 
- * @param nAliens 
+ * @param allyShipHealth Valore della vita della nave
+ * @param nAliens Numero di alieni vivi
  */
 void hudGame(int allyShipHealth, int nAliens){
     
@@ -97,12 +106,12 @@ void hudGame(int allyShipHealth, int nAliens){
 }
 
 /**
- * @brief Procedura che gestisce la creazione e l'utilizzo della navicella alleata
+ * @brief Procedura che gestisce la creazione e l'aggiornamento della navicella alleata
  * 
  */
 void* allyShipController(){
     int i = 0;
-    /* protezione della regione critica per la navicella alleata*/
+    // Protezione della regione critica per la navicella alleata
     pthread_mutex_lock(&mutex);
     allyShipBuffer->pos.x = ALLY_BORDER_SPACE;
     allyShipBuffer->pos.y = Y_HSEPARATOR + divideByTwo(p.y - Y_HSEPARATOR);
@@ -112,13 +121,13 @@ void* allyShipController(){
     allyShipBuffer->health = getMaxHealth(difficulty);
     pthread_mutex_unlock(&mutex);
     Direction direction;
+
     while (true) {
         usleep(15000);
         moveAllyShip(winT);
         
-        if(isBulletShot && canShoot){
+        if(isBulletShot && canShoot){ // Controllo se la navicella alleata puo' sparare
             canShoot = false;
-            //mvwprintw(winT, 3, 3, "bulletShot: %d, canShoot: %d", isBulletShot, canShoot);
 
             for(i=0;i<NUMBER_BULLETS;i++){
                 direction = i; 
@@ -126,9 +135,10 @@ void* allyShipController(){
                 pthread_detach(tNBullets[i]);
             } 
         }
-        /* Protezione per la modifica delle variabili globali */
+
+        // Protezione della regione critica per la modifica delle variabili globali
         pthread_mutex_lock(&mutex);
-        if(statusBullets[UP_DIRECTION] == OBJ_DEAD && statusBullets[DOWN_DIRECTION] == OBJ_DEAD){ 
+        if(statusBullets[UP_DIRECTION] == OBJ_DEAD && statusBullets[DOWN_DIRECTION] == OBJ_DEAD){ // Controllo se i proiettili sono morti e riabilita la possibilita' di sparare
             canShoot = true; 
             isBulletShot = false;
             statusBullets[UP_DIRECTION] = DEFAULT_VALUE;
@@ -143,28 +153,26 @@ void* allyShipController(){
 /**
  * @brief Procedura che gestisce la generazione del proiettile da parte della navicella alleata
  * 
- * @param win 
- * @param p 
- * @param posShip 
- * @param direction 
- * @param pipeOut 
+ + @param direction Indica la direzione del proiettile
  */
 void* bulletController(void* directionV){
     Direction dir = (Direction) directionV;
-    /* protezione della regione critica per il proiettile */
+
+    // Protezione della regione critica per il proiettile
     pthread_mutex_lock(&mutex);
     bullets[dir].pos.x = allyShipBuffer->pos.x + COLS_STARSHIP;
     bullets[dir].pos.y = allyShipBuffer->pos.y;
     bullets[dir].typeObject = BULLET_TYPE;
     bullets[dir].direction = ((Direction)directionV);
-    bullets[dir].idObj = dir; //assegno come id unico la direzione
+    bullets[dir].idObj = dir; // Assegno come id unico la direzione
     bullets[dir].tid = pthread_self();
     pthread_mutex_unlock(&mutex);
     statusBullets[dir] = OBJ_ALIVE;
     void* statusThread = malloc(sizeof(void*));
-    while(p.x >= bullets[dir].pos.x){
+
+    while(p.x >= bullets[dir].pos.x){ // Ciclo finche' il proiettile non esce dallo schermo
         usleep(100000);
-        switch (bullets[dir].direction) { 
+        switch (bullets[dir].direction) { // Gestione del movimento del proiettile e della meccanica del rimbalzo
             case UP_DIRECTION:
                 if(checkPos(p, bullets[dir].pos.y, PASSO)){
                     pthread_mutex_lock(&mutex);
@@ -198,24 +206,28 @@ void* bulletController(void* directionV){
     statusBullets[dir] = OBJ_DEAD;
     pthread_exit(NULL);
 }
+
 /**
  * @brief Procedura che gestisce la creazione e lo spostamento della navicella nemica
  * 
- * @param idNumberT
+ * @param idNumberT Identificativo dell'alieno
  */
 void* enemyShipController (void* idNumberT) {
     int arg = *((int*) idNumberT);
     int statustid, i = 0, numSpostamenti = 3;
     bool generateBomb = true;
-    /* protezione della regione critica per n-alieno */
+
+    // Protezione della regione critica per n-alieno
     pthread_mutex_lock(&mutex);
     int idNumber = *((int*) idNumberT);
-    // posizione iniziale dell'alieno con numero progressivo uguale a idNumber
+
+    // Posizione iniziale dell'alieno con numero progressivo uguale a idNumber
     i = idNumber / MAX_ALIENS_FOR_ROW;
     aliens[idNumber].pos.x = p.x - (ALLY_BORDER_SPACE + OUTER_ALIEN + SPACE_BETWEEN_ALIENS)*(i+PASSO);
     i = idNumber % MAX_ALIENS_FOR_ROW;
     aliens[idNumber].pos.y = Y_HSEPARATOR + divideByTwo(divideByTwo(p.y - Y_HSEPARATOR))*(i+PASSO);
-    // inizializzaizione delle informazioni dell'alieno
+
+    // Inizializzaizione delle informazioni dell'alieno
     aliens[idNumber].typeObject = ENEMY_SHIP_TYPE;
     aliens[idNumber].direction = DOWN_DIRECTION;
     aliens[idNumber].tid = pthread_self();
@@ -224,9 +236,9 @@ void* enemyShipController (void* idNumberT) {
     statusAliens[idNumber] = OBJ_ALIVE; 
     
     pthread_mutex_unlock(&mutex);
+
     while(true){
-        /* SPOSTAMENTO SINCRONO DEGLI ALIENI */
-        switch(aliens[idNumber].direction){
+        switch(aliens[idNumber].direction){ // Gestione del movimento dell'alieno
             case UP_DIRECTION:
                 if(numSpostamenti == MIN_MOVE_ALIEN){
                     aliens[idNumber].direction = DOWN_DIRECTION;
@@ -247,13 +259,14 @@ void* enemyShipController (void* idNumberT) {
                 break; 
         }
         
+        // Gestione della possibilita' di generare una bomba
         if(generateBomb && rand()%10 == DEFAULT_VALUE){
             pthread_create(&tNBombs[idNumber], NULL, bombController, idNumberT);
             pthread_detach(tNBombs[idNumber]);
             generateBomb = false;
         }
 
-        // se lo stato è diverso da OBJ_ALIVE, significa che il figlio è uscito
+        // Se la bomba e' morta, riabilita la possibilita' di generarla
         if(statusBombs[idNumber] == OBJ_DEAD){
             generateBomb = true; 
             statusBombs[idNumber] = DEFAULT_VALUE;
@@ -266,13 +279,11 @@ void* enemyShipController (void* idNumberT) {
 /**
  * @brief Procedura che gestisce la generazione della bomba da parte della navicella nemica
  * 
- * @param win 
- * @param p 
- * @param posAlien 
- * @param pipeOut 
- * @param difficultyMode 
+ * @param idNumberT Identificativo della bomba
  */
 void* bombController(void* idNumberT){
+
+    // Protezione della regione critica per la bomba
     pthread_mutex_lock(&mutex);
     int idNumber = *((int*) idNumberT);
     bombs[idNumber].pos.x = aliens[idNumber].pos.x-PASSO;
@@ -282,7 +293,8 @@ void* bombController(void* idNumberT){
     bombs[idNumber].tid = pthread_self();
     statusBombs[idNumber] = OBJ_ALIVE;
     pthread_mutex_unlock(&mutex);
-    while(bombs[idNumber].pos.x > 0){
+
+    while(bombs[idNumber].pos.x > 0){ // Ciclo finche' la bomba non esce dallo schermo
         pthread_mutex_lock(&mutex);
         bombs[idNumber].pos.x--;
         pthread_mutex_unlock(&mutex);
@@ -292,21 +304,19 @@ void* bombController(void* idNumberT){
 }
 
 /**
- * @brief 
+ * @brief Funzione che si occupa di stampare a schermo gli oggetti
  * 
- * @param win 
- * @param p 
- * @param pipeIn 
- * @param difficultyMode 
+ * @return EndGame Variabile che indica se l'utente ha vinto o meno
  */
 EndGame printObjects () {
     int i, j, nAliensAlive = FULL;
     usleep(10000);
     do {  
-        checkCollision();
-        gameStatus = isGameOver(nAliensAlive);
-        if(gameStatus == CONTINUE){
-            hudGame(allyShipBuffer->health, nAliensAlive);
+        checkCollision(); // Controllo se ci sono state delle collisioni
+
+        gameStatus = isGameOver(nAliensAlive); // Controllo se il gioco e' finito
+
+        if(gameStatus == CONTINUE){ // Se il gioco e' ancora in corso, allora procedo con la stampa dell'hud e di tutti gli oggetti vivi
             printStarShip(*allyShipBuffer);
 
             for(i=0;i<NUMBER_BULLETS;i++){
@@ -326,17 +336,20 @@ EndGame printObjects () {
                 }
             }
 
+            // Ciclo che elimina eventuali proiettili o bombe morti
             for(i=Y_HSEPARATOR;i<p.y;i++){
                 mvwaddch(winT, i, 0, BLANK_SPACE);
                 mvwaddch(winT, i, p.x-1, BLANK_SPACE);
             }
 
+            // Stampa dell'hud
             wmove(winT, Y_HSEPARATOR, 0);
             whline(winT, ACS_HLINE, p.x);
+            hudGame(allyShipBuffer->health, nAliensAlive);
 
             wrefresh(winT);
         }
-        if(firstAlienKilled){
+        if(firstAlienKilled){ // Se almeno un alieno e' morto, allora aggiorno il numero di alieni vivi
             nAliensAlive = countObjects(aliens, numAliens);
         }
     } while (gameStatus == CONTINUE);
@@ -344,35 +357,39 @@ EndGame printObjects () {
     return gameStatus;
 }
 
+/**
+ * @brief Procedura che leggendo dai buffer controlla se ci sono state collisioni tra oggetti ed elimina dallo schermo eventuali "cadaveri"
+ * 
+ */
 void checkCollision(){
     
-    int i,j,k;
+    int i,j,k; // Indici
     
-    //check navicella alleata
+    // Controllo delle collisioni che coinvolgono la navicella alleata
     for(i=0; i<numAliens; i++){
-        if(statusBombs[i] == OBJ_ALIVE && checkAllyBombCollision(allyShipBuffer->pos, bombs[i].pos)){ //collisione bomba con allyship
+        if(statusBombs[i] == OBJ_ALIVE && checkAllyBombCollision(allyShipBuffer->pos, bombs[i].pos)){ // Collisione bomba con navicella alleata
             pthread_mutex_lock(&mutex);
             allyShipBuffer->health--;
             killThread(tNBombs, statusBombs, i);
             clearObjects(winT, p, bombs[i]);
             pthread_mutex_unlock(&mutex);
         }
-        if(statusAliens[i] == OBJ_ALIVE && checkAllyAlienCollision(aliens[i].pos)){ //collisione tra navicella alleata e alieno
+        if(statusAliens[i] == OBJ_ALIVE && checkAllyAlienCollision(aliens[i].pos)){ // Collisione tra navicella alleata e alieno
             gameStatus = DEFEAT;
         }
     }
 
-    // check navicella nemica
+    // Controllo delle collisioni che coinvolgono la navicella nemica
     for(i=0;i<numAliens;i++){
         if(statusAliens[i] == OBJ_ALIVE){
             for(j=0;j<NUMBER_BULLETS;j++){
-                if(statusBullets[j] == OBJ_ALIVE && checkAlienBulletCollision(aliens[i].pos, bullets[j].pos)){
+                if(statusBullets[j] == OBJ_ALIVE && checkAlienBulletCollision(aliens[i].pos, bullets[j].pos)){ // Collisione proiettile con alieno
                     pthread_mutex_lock(&mutex);
                     killThread(tNBullets, statusBullets, j);
                     clearObjects(winT, p, bullets[j]);
                     aliens[i].health--;
                     initializeObject(bullets[j]);
-                    if(aliens[i].health == NO_HEALTH_REMAINING){
+                    if(aliens[i].health == NO_HEALTH_REMAINING){ // Se l'alieno non ha piu' vita, lo elimino
                         killThread(tNAliens, statusAliens, i);
                         clearObjects(winT, p, aliens[i]);
                         aliens[i].tid = UNDEFINED_TID;
@@ -387,18 +404,15 @@ void checkCollision(){
 }
 
 /**
- * @brief Procedura che ha la funzione di stampare la navicella alleata e gli alieni di primo
- * e secondo livello
+ * @brief Procedura che ha la funzione di stampare la navicella alleata, gli alieni di primo o secondo livello
  * 
- * @param win 
- * @param p 
- * @param ship 
+ * @param ship Oggetto navicella/alieno da stampare
  */
 void printStarShip (Object ship) {
-    int i, j, y;
+    int i, j, y; // Indici
+
     switch(ship.typeObject){
-        /* STAMPA NAVICELLA ALLEATA */
-        case ALLY_SHIP_TYPE:
+        case ALLY_SHIP_TYPE: // Stampa navicella alleata e cancellazione della posizione precedente
             pickColor(winT, PAIR_COLOR_ALLY_SHIP);
             char allySprite[ROWS_STARSHIP][COLS_STARSHIP] = STARSHIP;
             mvwprintw(winT, ship.pos.y-OUTER_STARSHIP, ship.pos.x, BLANK_SPACES_STARSHIP);
@@ -411,10 +425,10 @@ void printStarShip (Object ship) {
             }
             turnOffColor(winT, PAIR_COLOR_ALLY_SHIP);
             break;
-        case ENEMY_SHIP_TYPE:
+        case ENEMY_SHIP_TYPE: // Stampa alieno e cancellazione della posizione precedente
             y = ship.direction == UP_DIRECTION ? OUTER_ALIEN*DISTANCE_FROM_CENTER_ALIEN : OUTER_ALIEN*(-DISTANCE_FROM_CENTER_ALIEN);
             mvwprintw(winT, ship.pos.y+y, ship.pos.x-OUTER_ALIEN, BLANK_SPACES_ALIEN);
-            /* CANCELLA POSIZIONE PRECEDENTE DELL'ALIENO */
+
             for(i=0;i<ALIEN_SIZE+2;i++){
                 mvwaddch(winT, ship.pos.y+i-2, ship.pos.x+DISTANCE_FROM_CENTER_ALIEN, BLANK_SPACE);
                 mvwaddch(winT, ship.pos.y+i-2, ship.pos.x+DISTANCE_FROM_CENTER_ALIEN+PASSO, BLANK_SPACE);
@@ -427,7 +441,7 @@ void printStarShip (Object ship) {
             for(i=0;i<ROWS_ALIEN;i++){
                 for(j=0;j<COLS_ALIEN;j++){
                     y = ship.pos.y-divideByTwo(ALIEN_SIZE) + i;
-                    switch(ship.health){
+                    switch(ship.health){ // Personalizzazione della stampa dell'alieno in base alla sua vita
                         case FULL:
                             pickColor(winT, PAIR_COLOR_ALIEN);
                             mvwaddch(winT, y, ship.pos.x+j, alienSprite[i][j]);
@@ -453,13 +467,13 @@ void printStarShip (Object ship) {
 /**
  * @brief Procedura che stampa il proiettile o la bomba in base all'oggetto passato
  * 
- * @param win 
- * @param ship 
+ * @param bullet Oggetto proiettile/bomba da stampare
  */
 void printBullet (Object bullet) {
-    int y, x;
+    int y, x; // Indici
+
     switch (bullet.typeObject) {
-        case BULLET_TYPE:
+        case BULLET_TYPE: // Stampa proiettile
             pickColor(winT, PAIR_COLOR_BULLET);
             y = bullet.direction == UP_DIRECTION ? bullet.pos.y + PASSO : bullet.pos.y - PASSO;
             x = bullet.pos.x - BULLET_PACE; 
@@ -467,7 +481,7 @@ void printBullet (Object bullet) {
             mvwaddch(winT, bullet.pos.y, bullet.pos.x, BULLET_SPRITE);
             turnOffColor(winT, PAIR_COLOR_BULLET);
             break;
-        case BOMB_TYPE:
+        case BOMB_TYPE: // Stampa bomba
             pickColor(winT, PAIR_COLOR_BOMB);
             y = bullet.pos.y;
             x = bullet.pos.x + PASSO;
@@ -481,10 +495,6 @@ void printBullet (Object bullet) {
 /**
  * @brief Procedura che gestisce i comandi della navicella
  * 
- * @param win 
- * @param p 
- * @param yPos 
- * @param isBulletShot 
  */
 void moveAllyShip () {
     int y = allyShipBuffer->pos.y;
@@ -493,7 +503,7 @@ void moveAllyShip () {
     cbreak();
     wtimeout(winT, 100);
     int arrow = wgetch(winT);
-    if(arrow == ASCII_CODE_SPACE_BAR) {
+    if(arrow == ASCII_CODE_SPACE_BAR) { // Se viene premuto il tasto spazio, viene attivata la flag dello sparo
         isBulletShot = true;
     }
     pthread_mutex_lock(&mutex);
@@ -505,9 +515,9 @@ void moveAllyShip () {
 /**
  * @brief Funzione che verifica se la posizione dell'oggetto passato e' nei limiti definiti dallo schermo
  * 
- * @param p 
- * @param yPos 
- * @param size 
+ * @param p Risoluzione dello schermo
+ * @param yPos Posizione verticale dell'oggetto
+ * @param size Dimensione dell'oggetto
  * @return true 
  * @return false 
  */
@@ -518,7 +528,7 @@ bool checkPos (Point p, int yPos, int size) {
 /**
  * @brief Funzione che restituisce la dimensione da utilizzare in base alla difficolta'
  * 
- * @param difficultyMode 
+ * @param difficultyMode Difficolta' della partita
  * @return int 
  */
 int getMaxAlien(Difficulty difficultyMode){
@@ -528,7 +538,7 @@ int getMaxAlien(Difficulty difficultyMode){
 /**
  * @brief Funzione che restituisce la vita massima da utilizzare in base alla difficolta'
  * 
- * @param difficultyMode 
+ * @param difficultyMode Difficolta' della partita
  * @return int 
  */
 int getMaxHealth(Difficulty difficultyMode){
@@ -537,12 +547,13 @@ int getMaxHealth(Difficulty difficultyMode){
 
 /**
  * @brief Funzione che determina la condizione di vittoria, sconfitta o di continuo del gioco
- * @param nAliensAlive 
+ * 
+ * @param nAliensAlive Numero di alieni attivi
  * @return EndGame 
  */
 EndGame isGameOver (int nAliensAlive){
     /* gameStatus potrebbe essere gia' settata a sconfitta, in quanto la @checkCollision setta la 
-        variabile globale a "DEFEAT" in caso di collisione */
+        variabile globale a "DEFEAT" in caso di collisione tra navicella nemica e colonna a sinistra dello schermo */
     if(gameStatus == DEFEAT || allyShipBuffer->health == 0){ 
         return DEFEAT;
     }
@@ -551,7 +562,7 @@ EndGame isGameOver (int nAliensAlive){
 }
 
 /**
- * @brief 
+ * @brief Procedura che inizializza tutte le variabili globali
  * 
  */
 void initializeBuffers(){
@@ -567,20 +578,36 @@ void initializeBuffers(){
     tNBullets = calloc(NUMBER_BULLETS, sizeof(pthread_t));
 }
 
+/**
+ * @brief Procedura che elimina un thread e setta le variabili globali ad un valore di default
+ * 
+ * @param thread Thread da eliminare
+ * @param statusBuffer Buffer che contiene lo stato dei thread da reinizializzare
+ * @param id id del thread da eliminare
+ */
 void killThread(pthread_t* thread, int* statusBuffer, int id){
     pthread_cancel(thread[id]);
     statusBuffer[id] = OBJ_DEAD;
     thread[id] = DEFAULT_VALUE;
 }
 
+/**
+ * @brief Procedura che inizializza un oggetto con dei valori di default
+ * 
+ * @param obj Oggetto da inizializzare
+ */
 void initializeObject(Object obj){
     obj.pos.x = DEFAULT_VALUE;
     obj.pos.y = DEFAULT_VALUE;
     obj.tid = UNDEFINED_TID;
-    obj.typeObject= UNDEFINED;
+    obj.typeObject = UNDEFINED;
     obj.idObj = DEFAULT_VALUE;
 }
 
+/**
+ * @brief Procedura che libera la memoria allocata per gli oggetti
+ * 
+ */
 void freeAll(){
     free(bullets);
     free(aliens);

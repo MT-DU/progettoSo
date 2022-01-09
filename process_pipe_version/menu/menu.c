@@ -1,10 +1,9 @@
 #include "menu.h"
 
-int difficolta;
+int difficolta; // Variabile globale per la scelta della difficolta
 
 /**
- * @brief Procedura iniziale del gioco.
- * Da qui si avviano i vari processi di gestione.
+ * @brief Procedura iniziale del gioco. Vengono inizializzate le ncurses e la finestra di dialogo
  * 
  */
 void mainApp(){
@@ -19,7 +18,7 @@ void mainApp(){
 }
 
 /**
- * @brief Crea la finestra di dialogo
+ * @brief Crea la finestra di dialogo e richiama la procedura per la creazione del menu.
  * 
  */
 void mainWindow(){
@@ -30,10 +29,10 @@ void mainWindow(){
 }
 
 /**
- * @brief Procedura che si occupa di stampare il main menu fin quanto non si quitta dal gioco
+ * @brief Procedura che si occupa di stampare il main menu fin quando non si esce dal gioco.
  * 
- * @param win 
- * @param max_res 
+ * @param win Finestra su cui stampare il menu'
+ * @param max_res Risoluzione della finestra
  */
 void mainMenu(WINDOW *win, Point max_res){
     int getInput, counter = 0;
@@ -44,19 +43,19 @@ void mainMenu(WINDOW *win, Point max_res){
     do{
         wclear(win);
         hudMainMenu(win, max_res, PRINT_MENU_MAIN);
-        printMenu(win, max_res, counter, PRINT_MENU_MAIN, NUMBER_CHOICES, vetLabelMenu);
+        printMenu(win, max_res, counter, NUMBER_CHOICES, vetLabelMenu);
         getInput = wgetch(win);
-        keyPadSelector(win, PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
+        keyPadSelector(PLAY_GAME_NUMBER, QUIT_GAME_NUMBER, getInput, &counter);
         selectOptionMainMenu(win, max_res, &getInput, counter, &difficultyMode);
         wrefresh(win);
-    } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q); // q è il tasto per quittare
+    } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q); // q oppure Q sono i tasti per uscire
 }
 
 /**
  * @brief Procedura che stampa l'hud del menu principale
  * 
- * @param win 
- * @param max_res
+ * @param win Finestra su cui stampare l'hud
+ * @param max_res Risoluzione della finestra
  */
 void hudMainMenu(WINDOW *win, Point max_res, int menu){
     pickColor(win, PAIR_COLOR_LOGO);
@@ -79,8 +78,8 @@ void hudMainMenu(WINDOW *win, Point max_res, int menu){
 /**
  * @brief Stampa il logo del gioco
  * 
- * @param win 
- * @param max_res.x 
+ * @param win Finestra su cui stampare il logo
+ * @param max_res Risoluzione della finestra
  */
 void printLogo (WINDOW* win, Point max_res) {
     int halfLenLogo = SIZE_LOGO / 2;
@@ -108,36 +107,66 @@ void printLogo (WINDOW* win, Point max_res) {
 }
 
 /**
- * @brief Procedura che gestisce la selezione dell'utente
+ * @brief Procedura che gestisce la selezione dell'utente nel main menu'
  * 
- * @param win window attiva
- * @param max_res 
- * @param input
- * @param counter opzione selezionata dal main menu
+ * @param win Finestra su cui stampare il menu'
+ * @param max_res Risoluzione della finestra
+ * @param input Input dell'utente
+ * @param counter Opzione selezionata dall'utente
+ * @param difficultyMode Difficolta modificabile dall'utente
  */
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode){
 
     int i, y, x;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
-    if((*input) == ASCII_CODE_ENTER){
+    if((*input) == ASCII_CODE_ENTER){ // se l'utente ha premuto invio allora viene selezionata l'opzione
         switch (counter) {
-            case PLAY_GAME_NUMBER:
+            case PLAY_GAME_NUMBER: // seleziona la modalita' di gioco ed avvia il gioco
                 wclear(win);
                 mainGame(win, max_res, *difficultyMode);
                 fflush(stdin);
                 break;
-            case MODE_GAME_NUMBER:
+            case MODE_GAME_NUMBER: // seleziona la modalita' di gioco e richiama la procedura per modificare la modalita' di gioco
                 wclear(win);
                 hudMainMenu(win, max_res, PRINT_MENU_GAME_MODE);
                 gameMode(win, max_res, difficultyMode);
                 break;
-            case QUIT_GAME_NUMBER:
+            case QUIT_GAME_NUMBER: // esce dal gioco
                 (*input) = ASCII_CODE_Q;
                 break;
         }
     }
 }
 
+/**
+ * @brief Procedura che permette di stampare a schermo un menu' per la scelta della difficolta' del gioco
+ * 
+ * @param win 
+ * @param max_res 
+ */
+void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode) {
+    int i, getInput, counter = 0;
+    bool isPicked = false;
+    char vetLabelMenu[NUMBER_CHOICES][DIM_MAX_PRINT_MENU] = LABEL_GAME_MODE_MENU;
+    do{
+        printMenu(win, max_res, counter, NUMBER_CHOICES, vetLabelMenu);
+        getInput = wgetch(win);
+        keyPadSelector(EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
+        selectDifficulty(win, max_res, getInput, counter, difficultyMode, &isPicked);
+        wrefresh(win);
+    } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q && !isPicked);
+}
+
+/**
+ * @brief Procedura che gestisce la scelta della difficolta' da parte dell'utente
+ * 
+ * @param win Finestra su cui stampare il menu'
+ * @param max_res Risoluzione della finestra
+ * @param input Input dell'utente
+ * @param counter Opzione selezionata dall'utente
+ * @param difficultyMode Difficolta scelta dall'utente
+ * @param isPicked Indica se l'opzione e' stata selezionata
+ */
 void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked){
     int i, y, x;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
@@ -159,21 +188,3 @@ void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Diffic
     }
 }
 
-/**
- * @brief Procedura che si occupa di gestire la scelta della difficolta' del gioco
- * 
- * @param win 
- * @param max_res 
- */
-void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode) {
-    int i, getInput, counter = 0;
-    bool isPicked = false;
-    char vetLabelMenu[NUMBER_CHOICES][DIM_MAX_PRINT_MENU] = LABEL_GAME_MODE_MENU;
-    do{
-        printMenu(win, max_res, counter, PRINT_MENU_GAME_MODE, NUMBER_CHOICES, vetLabelMenu);
-        getInput = wgetch(win);
-        keyPadSelector(win, EASY_MODE_NUMBER, CUSTOM_MODE_NUMBER, getInput, &counter);
-        selectDifficulty(win, max_res, getInput, counter, difficultyMode, &isPicked);
-        wrefresh(win);
-    } while(getInput != ASCII_CODE_q && getInput != ASCII_CODE_Q && !isPicked);
-}

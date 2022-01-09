@@ -3,7 +3,7 @@
 /**
  * @brief Procedura che gestisce i messaggi di errore dell'applicativo
  * 
- * @param typeException 
+ * @param typeException Variabile che indica il tipo di errore
  */
 void printExceptions(int typeException){
     switch (typeException){

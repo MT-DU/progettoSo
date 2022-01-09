@@ -8,7 +8,7 @@
 #define ASCII_CODE_ENTER 10
 #define NUMBER_CHOICES 3 //indica il numero di scelte per menu, da modificare nel caso in cui si aumentino i casi dei vari menu
 
-//macro gestione hud
+// Macro relative all'hud e al logo
 #define Y_HLINE 6
 #define LOGO1 " ___ ___ ___ ___ ___    _| |___|  _|___ ___ _| |___ ___ ___ "
 #define LOGO2 "|_ -| . | .'|  _| -_|  | . | -_|  _| -_|   | . | -_|  _|_ -|"
@@ -17,7 +17,7 @@
 #define SIZE_LOGO 61 // lunghezza della stringa della singola macro logo
 #define NUM_LOGHI 4 // tiene conto del numero di macro per i logo ci sono
 
-//macro gestione menu principale
+// Macro relative al menu principale
 #define PLAY_GAME_NUMBER 0
 #define MODE_GAME_NUMBER 1
 #define QUIT_GAME_NUMBER 2
@@ -28,7 +28,7 @@
 #define LABEL_MAIN_MENU {{PLAY_GAME},{MODE_GAME},{QUIT_GAME}}
 #define EXIT_LABEL_HUD "Press q to exit the game"
 
-//macro gestione menu difficolta
+// Macro relative al menu' della difficolta'
 #define EASY_MODE_NUMBER 0
 #define HARD_MODE_NUMBER 1
 #define CUSTOM_MODE_NUMBER 2
@@ -39,15 +39,15 @@
 #define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"
 
-
-/* PROTOTIPI FUNZIONI / PROCEDURE */
+// Dichiarazione delle funzioni e procedure utilizzate 
 void mainApp();
 void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
 void hudMainMenu(WINDOW *win, Point max_res, int menu);
 void printLogo(WINDOW *win, Point max_res);
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode);
-void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
 void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode);
+void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
+
 
 

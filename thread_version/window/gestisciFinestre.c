@@ -3,13 +3,12 @@
 /**
  * @brief Procedura che si occupa di incrementare o decrementare la variabile counter in base all'input delle frecce direzionali
  * 
- * @param win 
- * @param min_choice valore minimo 
- * @param max_choice valore massimo
- * @param input 
- * @param counter puntatore alla variabile da gestire
+ * @param min_choice Valore minimo 
+ * @param max_choice Valore massimo
+ * @param input Input dell'utente
+ * @param counter Puntatore alla variabile da gestire
  */
-void keyPadSelector(WINDOW *win, int min_choice, int max_choice, int input, int* counter){
+void keyPadSelector(int min_choice, int max_choice, int input, int* counter){
     switch (input){
         case KEY_UP:
             if((*counter)>min_choice){
@@ -24,19 +23,21 @@ void keyPadSelector(WINDOW *win, int min_choice, int max_choice, int input, int*
 }
 
 /**
- * @brief Procedura che si occupa di stampare i menu
+ * @brief Procedura che si occupa di stampare i menu'
  * 
- * @param win 
- * @param max_res 
- * @param selection 
+ * @param win Finestra su cui stampare
+ * @param max_res Risoluzione della finestra
+ * @param selection Indice della scelta
+ * @param row Numero di scelte
+ * @param vetStringsMenu Vettore di stringhe da stampare
  */
-void printMenu (WINDOW* win, Point max_res, int selection, int menu, int row, char vetStringsMenu[row][DIM_MAX_PRINT_MENU]) {
+void printMenu (WINDOW* win, Point max_res, int selection, int row, char vetStringsMenu[row][DIM_MAX_PRINT_MENU]) {
     int i, y, x;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x), indexPrint;
     int longestString = searchLongestString(row, vetStringsMenu);
     int longestStringDivided = divideByTwo(longestString);
     
-    for(i = 0; i < row; i++) { //blocco di codice per rimuovere i '>' dal menu
+    for(i = 0; i < row; i++) {
         y = yDivided + SPACE_BETWEEN_CHOICES * i;
         x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
         mvwaddch(win, y, x, ' ');
@@ -56,10 +57,10 @@ void printMenu (WINDOW* win, Point max_res, int selection, int menu, int row, ch
 }
 
 /**
- * @brief Funzione che restituisce la lunghezza della stringa piu' lunga della matrice
- * viene utilizzata per la stampa dei casi del menu
- * 
- * @param vetStrings, contiene le stringhe di stampa
+ * @brief Funzione che restituisce la lunghezza della stringa piu' lunga della matrice. (Viene utilizzata per la stampa dei casi del menu)
+ *
+ * @param row Numero di righe della matrice 
+ * @param vetStrings Stringhe di cui calcolare la lunghezza
  * @return lunghezza della stringa piu' lunga
  */
 int searchLongestString(int row, char vetStrings[row][DIM_MAX_PRINT_MENU]){
@@ -75,9 +76,9 @@ int searchLongestString(int row, char vetStrings[row][DIM_MAX_PRINT_MENU]){
 }
 
 /**
- * @brief Procedura utilizzata per centrare gli elementi da stampare
+ * @brief Procedura che restituisce la meta' del parametro coord. (utilizzata per centrare gli elementi da stampare)
  * 
- * @param coord 
+ * @param coord Coordinata da centrare
  * @return int 
  */
 int divideByTwo(int coord){
@@ -109,8 +110,8 @@ void setupColors(){
 /**
  * @brief Procedura che data la tipologia di oggetto (testo, logo,...) personalizza il colore
  * 
- * @param win 
- * @param color 
+ * @param win Finestra su cui stampare
+ * @param type_color Tipologia di oggetto
  */
 void pickColor(WINDOW* win, int type_color){
     wattron(win, COLOR_PAIR(type_color));
@@ -119,8 +120,8 @@ void pickColor(WINDOW* win, int type_color){
 /**
  * @brief Procedura che disattiva il colore selezionato
  * 
- * @param win 
- * @param color 
+ * @param win Finestra su cui stampare
+ * @param type_color Tipologia di oggetto
  */
 void turnOffColor(WINDOW* win, int type_color){
     wattroff(win, COLOR_PAIR(type_color));
