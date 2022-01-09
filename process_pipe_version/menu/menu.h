@@ -43,7 +43,6 @@
 #define PRINT_NO_MENU 2
 #define DELAY_TUTORIAL 1000000
 #define ROWS_TUTORIAL 9
-#define SPACE_BETWEEN_CHOICES 1
 #define SPACE_FROM_BORDER 5
 #define SPACE_FROM_CENTER 8
 #define INTRO_1 "Welcome to Space Defender!"

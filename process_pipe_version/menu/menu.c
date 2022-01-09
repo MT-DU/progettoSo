@@ -125,7 +125,7 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
                 wclear(win);
                 tutorial(win, max_res);
                 wclear(win);
-                mainGame(win, *difficultyMode);
+                mainGame(win, max_res, *difficultyMode);
                 fflush(stdin);
                 break;
             case MODE_GAME_NUMBER: // seleziona la modalita' di gioco e richiama la procedura per modificare la modalita' di gioco
@@ -148,52 +148,24 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
  */
 void tutorial (WINDOW* win, Point max_res) {
 
-    int i = 7, j;
-    
-    char stampaIntro[ROWS_TUTORIAL][71] = {"","","","","","","","",""};
-
-    for(j=0;j<ROWS_TUTORIAL;j++){
-        switch (j) {
-            case 0:
-                strcat(stampaIntro[j], INTRO_1);
-                break;
-            case 1:
-                strcat(stampaIntro[j], INTRO_2);
-                break;
-            case 2:
-                strcat(stampaIntro[j], INTRO_3);
-                break;
-            case 3:
-                strcat(stampaIntro[j], INTRO_4);
-                break;
-            case 4:
-                strcat(stampaIntro[j], INTRO_5);
-                break;
-            case 5:
-                strcat(stampaIntro[j], INTRO_6);
-                break;
-            case 6:
-                strcat(stampaIntro[j], INTRO_7);
-                break;
-            case 7:
-                strcat(stampaIntro[j], INTRO_8);
-                break;
-            case 8:
-                strcat(stampaIntro[j], INTRO_9);
-                break;
-        }
-    }
+    int i = 7;
 
     while(i>0){
         hudMainMenu(win, max_res, PRINT_NO_MENU);
 
-        for(j==;j<ROWS_TUTORIAL;j++){
-            mvwprintw(win, divideByTwo(max_res.y) - SPACE_FROM_CENTER + 2*j, divideByTwo(max_res.x) - strlen(stampaIntro[j]), stampaIntro[j]);
-        }
+        mvwprintw(win, divideByTwo(max_res.y)-8, divideByTwo(max_res.x) - strlen(INTRO_1), INTRO_1);
+        mvwprintw(win, divideByTwo(max_res.y)-6, divideByTwo(max_res.x) - strlen(INTRO_2), INTRO_2);
+        mvwprintw(win, divideByTwo(max_res.y)-4, divideByTwo(max_res.x) - strlen(INTRO_3), INTRO_3);
+        mvwprintw(win, divideByTwo(max_res.y)-2, divideByTwo(max_res.x) - strlen(INTRO_4), INTRO_4);
+        mvwprintw(win, divideByTwo(max_res.y)  , divideByTwo(max_res.x) - strlen(INTRO_5), INTRO_5);
+        mvwprintw(win, divideByTwo(max_res.y)+2, divideByTwo(max_res.x) - strlen(INTRO_6), INTRO_6);
+        mvwprintw(win, divideByTwo(max_res.y)+4, divideByTwo(max_res.x) - strlen(INTRO_7), INTRO_7);
+        mvwprintw(win, divideByTwo(max_res.y)+6, divideByTwo(max_res.x) - strlen(INTRO_8), INTRO_8);
+        mvwprintw(win, divideByTwo(max_res.y)+8, divideByTwo(max_res.x) - strlen(INTRO_9), INTRO_9);
 
-        mvwprintw(win, max_res.y-1, SPACE_FROM_BORDER, INTRO_10);
-        mvwprintw(win, max_res.y-1, max_res.x - SPACE_FROM_BORDER - strlen(INTRO_11)-2, INTRO_11);
-        mvwprintw(win, max_res.y-1, max_res.x - SPACE_FROM_BORDER - 2, " %d", i);
+        mvwprintw(win, max_res.y-2, SPACE_FROM_BORDER, INTRO_10);
+        mvwprintw(win, max_res.y-2, max_res.x - SPACE_FROM_BORDER - strlen(INTRO_11)-2, INTRO_11);
+        mvwprintw(win, max_res.y-2, max_res.x - SPACE_FROM_BORDER - 2, " %d", i);
 
         usleep(DELAY_TUTORIAL);
         i--;
