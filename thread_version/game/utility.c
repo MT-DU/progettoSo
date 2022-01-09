@@ -1,39 +1,10 @@
 #include "utility.h"
 
-
-/**
- * @brief Procedura che inizializza il tipo di oggetto e il tid degli elementi dell'array
- * 
- * @param array 
- * @param size 
- */
-void objectArrayInitializer (Object array[], int size) {
-    int i;
-    for(i=0;i<size;i++){
-        array[i].typeObject = UNDEFINED;
-        array[i].tid = UNDEFINED_TID;
-    }
-}
-
-/**
- * @brief Procedura che popola un array di interi dato un value
- * 
- * @param array 
- * @param size 
- * @param value
- */
-void initializeArray(int array[], int size, int value){
-    int i;
-    for(i = 0; i < size; i++){
-        array[i] = value;
-    }
-}
-
 /**
  * @brief Funzione per il check delle collisioni tra navicella alleata e bomba
  * 
- * @param pos1 allyShip
- * @param pos2 bomba
+ * @param pos1 Posizione della navicella alleata
+ * @param pos2 Posizione della bomba
  * @return true se e' avvenuta la collisione
  * @return false se non e' avvenuta la collisione
  */
@@ -41,11 +12,12 @@ bool checkAllyBombCollision(Point pos1, Point pos2){
     pos1.x = pos1.x + STARSHIP_SIZE;
     return (pos1.y-1 == pos2.y || pos1.y+1 == pos2.y || pos1.y==pos2.y) && (pos1.x == pos2.x || pos1.x+1 == pos2.x);
 }
+
 /**
  * @brief Funzione per il check delle collisioni tra alieno e proiettile
  * 
- * @param pos1 
- * @param pos2 
+ * @param pos1 Posizione dell'alieno
+ * @param pos2 Posizione del proiettile
  * @return true se e' avvenuta la collisione
  * @return false se non e' avvenuta la collisione
  */
@@ -75,7 +47,7 @@ bool checkAlienBulletCollision (Point pos1, Point pos2){
 /**
  * @brief Funzione per il check delle collisioni tra navicella alleata e alieno
  * 
- * @param pos1 alieno
+ * @param pos1 Posizione dell'alieno
  * @return true se e' avvenuta la collisione
  * @return false se non e' avvenuta la collisione
  */
@@ -88,9 +60,9 @@ bool checkAllyAlienCollision (Point pos1) {
 /**
  * @brief Funzione che restituisce il numero di oggetti presenti all'interno dell'array
  * 
- * @param array 
- * @param size 
- * @return int 
+ * @param array Array di oggetti da controllare
+ * @param size Dimensione dell'array
+ * @return int Numero di oggetti presenti nell'array
  */
 int countObjects(Object array[], int size){
     int i = 0, cont = 0;
@@ -105,30 +77,30 @@ int countObjects(Object array[], int size){
 /**
  * @brief Procedura che pulisce l'ultima posizione dell'oggetto
  * 
- * @param win 
- * @param p 
- * @param obj 
+ * @param win Window su cui disegnare
+ * @param p Risoluzione della finestra
+ * @param obj Oggetto da pulire
  */
 void clearObjects (WINDOW* win, Point p, Object obj) {
 
-    int i,j,k,y;
+    int i,j,k,y; // Indici
 
     switch(obj.typeObject){
-        case BOMB_TYPE:
+        case BOMB_TYPE: // Se e' una bomba
             for(k=0;k<ROWS_ALIEN;k++){
                 for(j=0;j<COLS_ALIEN;j++){
                     mvwaddch(win, obj.pos.y-1+k, obj.pos.x-1+j, BLANK_SPACE);
                 }
             }
             break;
-        case BULLET_TYPE:
+        case BULLET_TYPE: // Se e' un proiettile
             for(k=0;k<CLEAN_BULLET_AREA;k++){
                 for(j=0;j<CLEAN_BULLET_AREA;j++){
                     mvwaddch(win, obj.pos.y-2+k, obj.pos.x-2+j, BLANK_SPACE);
                 }
             }               
             break;
-        case ENEMY_SHIP_TYPE:
+        case ENEMY_SHIP_TYPE: // Se e' un alieno
             for(k=0;k<ROWS_ALIEN;k++){
                 for(j=0;j<COLS_ALIEN;j++){
                     y = obj.pos.y-divideByTwo(ALIEN_SIZE) + k;
@@ -136,7 +108,6 @@ void clearObjects (WINDOW* win, Point p, Object obj) {
                 }
             }
             break;
-
     }
 }
 
@@ -144,9 +115,9 @@ void clearObjects (WINDOW* win, Point p, Object obj) {
 /**
  * @brief Procedura che si occupa di stampare il messaggio di vittoria o sconfitta a fine partita
  * 
- * @param win 
- * @param p 
- * @param gameStatus 
+ * @param win Window su cui disegnare
+ * @param p Risoluzione della finestra
+ * @param gameStatus Variabile che indica se la partita e' finita in modo vittoria o sconfitta
  */
 void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
     wclear(win);
@@ -159,6 +130,7 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
 
         case VICTORY:
 
+            // Caricamento del messaggio di vittoria
             for(i = 0; i < CUP_ROWS; i++){
                 strcpy(winPrint[i], "");
                 switch (i) {
@@ -198,14 +170,15 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
                 }
             }
 
+            // Stampa del messaggio di vittoria
             for(i=0;i<CUP_ROWS;i++){
                 mvwprintw(win, y+i-(CUP_COLS/2), x-(CUP_ROWS/2), winPrint[i]);
             }
             break;
 
-        // defeat
-        case DEFEAT:
+        case DEFEAT: 
 
+            // Caricamento del messaggio di sconfitta
             for(i = 0; i < FACE_ROWS; i++){
                 strcpy(defeatPrint[i], "");
                 switch (i) {
@@ -244,13 +217,15 @@ void endGamePrint(WINDOW* win, Point p, EndGame gameStatus) {
                         break;
                 }
             }
-
+            
+            // Stampa del messaggio di sconfitta
             for(i=0;i<FACE_ROWS;i++){
                 mvwprintw(win, y+i-(FACE_ROWS/2), x-(FACE_COLS/2), defeatPrint[i]);
             }
             break;
     }
     
+    // Stampa della voce che annuncia il ritorno alla schermata di menu e refresh della finestra
     i = 5;
     while(i>0){
         mvwprintw(win, p.y-1, divideByTwo(p.x) - divideByTwo(sizeof(BACK_TO_MAIN_MENU)), BACK_TO_MAIN_MENU, i);

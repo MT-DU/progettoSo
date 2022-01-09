@@ -1,9 +1,9 @@
 #include "errors.h"
 
 /**
- * @brief Procedura che gestisce i messaggi di errore dell'applicativo
+ * @brief Procedura che gestisce i messaggi di errore del gioco
  * 
- * @param typeException 
+ * @param typeException Variabile che indica il tipo di errore
  */
 void printExceptions(int typeException){
     switch (typeException){
