@@ -503,7 +503,8 @@ void moveAllyShip () {
     cbreak();
     wtimeout(winT, 100);
     int arrow = wgetch(winT);
-    if(arrow == ASCII_CODE_SPACE_BAR) { // Se viene premuto il tasto spazio, viene attivata la flag dello sparo
+
+    if(canShoot && arrow == ASCII_CODE_SPACE_BAR) { // Se viene premuto il tasto spazio e si è abilitati a sparare, viene attivata la flag dello sparo
         isBulletShot = true;
     }
     pthread_mutex_lock(&mutex);

@@ -148,28 +148,26 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
  */
 void tutorial (WINDOW* win, Point max_res) {
 
-    int i = 7;
+    int i = 9;
 
-    while(i>0){
-        hudMainMenu(win, max_res, PRINT_NO_MENU);
+    mvwprintw(win, divideByTwo(max_res.y)-8, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_1)), INTRO_1);
+    mvwprintw(win, divideByTwo(max_res.y)-6, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_2)), INTRO_2);
+    mvwprintw(win, divideByTwo(max_res.y)-4, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_3)), INTRO_3);
+    mvwprintw(win, divideByTwo(max_res.y)-2, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_4)), INTRO_4);
+    mvwprintw(win, divideByTwo(max_res.y)  , divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_5)), INTRO_5);
+    mvwprintw(win, divideByTwo(max_res.y)+2, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_6)), INTRO_6);
+    mvwprintw(win, divideByTwo(max_res.y)+4, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_7)), INTRO_7);
+    mvwprintw(win, divideByTwo(max_res.y)+6, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_8)), INTRO_8);
+    mvwprintw(win, divideByTwo(max_res.y)+8, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_9)), INTRO_9);
 
-        mvwprintw(win, divideByTwo(max_res.y)-8, divideByTwo(max_res.x) - strlen(INTRO_1), INTRO_1);
-        mvwprintw(win, divideByTwo(max_res.y)-6, divideByTwo(max_res.x) - strlen(INTRO_2), INTRO_2);
-        mvwprintw(win, divideByTwo(max_res.y)-4, divideByTwo(max_res.x) - strlen(INTRO_3), INTRO_3);
-        mvwprintw(win, divideByTwo(max_res.y)-2, divideByTwo(max_res.x) - strlen(INTRO_4), INTRO_4);
-        mvwprintw(win, divideByTwo(max_res.y)  , divideByTwo(max_res.x) - strlen(INTRO_5), INTRO_5);
-        mvwprintw(win, divideByTwo(max_res.y)+2, divideByTwo(max_res.x) - strlen(INTRO_6), INTRO_6);
-        mvwprintw(win, divideByTwo(max_res.y)+4, divideByTwo(max_res.x) - strlen(INTRO_7), INTRO_7);
-        mvwprintw(win, divideByTwo(max_res.y)+6, divideByTwo(max_res.x) - strlen(INTRO_8), INTRO_8);
-        mvwprintw(win, divideByTwo(max_res.y)+8, divideByTwo(max_res.x) - strlen(INTRO_9), INTRO_9);
+    mvwprintw(win, max_res.y-2, SPACE_FROM_BORDER, INTRO_10);
 
-        mvwprintw(win, max_res.y-2, SPACE_FROM_BORDER, INTRO_10);
+    while(i>=0){
         mvwprintw(win, max_res.y-2, max_res.x - SPACE_FROM_BORDER - strlen(INTRO_11)-2, INTRO_11);
         mvwprintw(win, max_res.y-2, max_res.x - SPACE_FROM_BORDER - 2, " %d", i);
 
-        usleep(DELAY_TUTORIAL);
+        usleep(1000000);
         i--;
-        wrefresh(win);
     }
     
 }
