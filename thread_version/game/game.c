@@ -507,7 +507,7 @@ void moveAllyShip () {
         isBulletShot = true;
     }
     pthread_mutex_lock(&mutex);
-    keyPadSelector(winT, Y_HSEPARATOR+STARSHIP_SIZE, p.y-STARSHIP_SIZE, arrow, &allyShipBuffer->pos.y);
+    keyPadSelector(Y_HSEPARATOR+STARSHIP_SIZE, p.y-STARSHIP_SIZE, arrow, &allyShipBuffer->pos.y);
     pthread_mutex_unlock(&mutex);
     nocbreak();
 }

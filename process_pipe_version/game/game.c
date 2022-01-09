@@ -182,7 +182,7 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Diffic
                     printExceptions(TYPE_EXCEPTION_PROCESS_CREATION_FAILURE);
                     break;
                 case PROCESS_RETURN_CHILD_PID:
-                    bombController(win, p, alien.pos, pipeOut, difficultyMode);
+                    bombController(win, p, alien.pos, pipeOut);
             }
             generateBomb = false;
             statusPid = OBJ_ALIVE;

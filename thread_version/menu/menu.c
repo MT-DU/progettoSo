@@ -123,7 +123,7 @@ void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, D
         switch (counter) {
             case PLAY_GAME_NUMBER: // seleziona la modalita' di gioco ed avvia il gioco
                 wclear(win);
-                mainGame(win, max_res, *difficultyMode);
+                mainGame(win, *difficultyMode);
                 fflush(stdin);
                 break;
             case MODE_GAME_NUMBER: // seleziona la modalita' di gioco e richiama la procedura per modificare la modalita' di gioco
