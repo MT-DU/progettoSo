@@ -7,7 +7,6 @@
 #define ASCII_CODE_Q 81
 #define ASCII_CODE_ENTER 10
 #define NUMBER_CHOICES 3
-#define NUMBER_CHOICES_GAME_MODE 2
 
 // Macro relative all'hud e al logo
 #define Y_HLINE 6
@@ -30,14 +29,19 @@
 #define EXIT_LABEL_HUD "Press q to exit the game"
 #define EASY_MODE_SELECTED "YOU'LL PLAY IN: EASY MODE"
 #define HARD_MODE_SELECTED "YOU'LL PLAY IN: HARD MODE"
+#define CUSTOM_MODE_SELECTED "YOU'LL PLAY IN: CUSTOM MODE"
 
 // Macro relative al menu' della difficolta'
 #define EASY_MODE_NUMBER 0
 #define HARD_MODE_NUMBER 1
+#define CUSTOM_MODE_NUMBER 2
 #define EASY_MODE "Easy Mode"
 #define HARD_MODE "Hard Mode"
+#define CUSTOM_MODE "Custom Mode"
+#define CUSTOM_MODE_PRINT "Number of Aliens: %d"
+#define CUSTOM_MODE_PRINT_HINT "Hint: Press up or down to increment or decrement the number"
 #define PRINT_MENU_GAME_MODE 1 
-#define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE}}
+#define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"
 
 // Macro relative alla schermata di introduzione
@@ -56,10 +60,12 @@
 void mainApp();
 void mainWindow();
 void mainMenu(WINDOW *win, Point max_res);
-void hudMainMenu(WINDOW *win, Point max_res, int menu, Difficulty difficultyMode);
+void hudMainMenu(WINDOW *win, Point max_res, int menu, DifficultyType difficultyMode);
 void printLogo(WINDOW *win, Point max_res);
-void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode, int* isTutorialShowed);
+void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, DifficultyType* difficultyMode, int* isTutorialShowed);
 void tutorial (WINDOW* win, Point max_res);
-void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode);
-void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
-void difficultySelected(WINDOW* win, Point p, Difficulty difficulty);
+void gameMode (WINDOW* win, Point max_res, DifficultyType* difficultyMode);
+void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, DifficultyType* difficultyMode, bool* isPicked);
+void difficultySelected(WINDOW* win, Point p, DifficultyType difficulty);
+void customDifficulty(WINDOW* win, Point max_res, DifficultyType* difficultyMode);
+void printCustomMenu(WINDOW* win, Point max_res, int numAliens);

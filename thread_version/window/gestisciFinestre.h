@@ -14,6 +14,7 @@ typedef struct point{
 #define SELECTOR '>'
 #define SPACE_BETWEEN_CHOICES 3
 #define CREATE_OFFSET_SPACES 3
+#define BLANK_SPACE ' '
 
 // Macro relative all'inizializzazione dei colori
 #define PAIR_COLOR_LOGO 1
@@ -26,7 +27,7 @@ typedef struct point{
 #define PAIR_COLOR_ALIENS_REMAINING 8
 #define PAIR_COLOR_ALIEN_HALF_HEALTH 9
 #define PAIR_COLOR_ALIEN_LOW_HEALTH 10
-
+#define PAIR_COLOR_MAIN_MENU 11
 #define MIN_POS 0
 
 // Dichiarazione delle funzioni e procedure utilizzate 

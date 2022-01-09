@@ -8,7 +8,7 @@ int firstAlienKilled, isBulletShot, isBombShot, canShoot, *statusBullets, *statu
 WINDOW* winT; // Finestra di stampa
 Point p; // Risoluzione della finestra
 EndGame gameStatus = CONTINUE; // Variabile usata per controllare lo stato del gioco
-Difficulty difficulty; // Variabile che indica la difficoltà del gioco
+DifficultyType difficulty; // Variabile che indica la difficoltà del gioco
 
 /**
  * @brief Procedura principale da cui parte il gioco
@@ -16,7 +16,7 @@ Difficulty difficulty; // Variabile che indica la difficoltà del gioco
  * @param win Finestra di stampa
  * @param difficultyMode Difficoltà del gioco
  */
-void mainGame(WINDOW* win, Difficulty difficultyMode){
+void mainGame(WINDOW* win, DifficultyType difficultyMode){
     srand(time(NULL));
     int i, status;
     void* id = malloc(sizeof(void*));
@@ -34,13 +34,18 @@ void mainGame(WINDOW* win, Difficulty difficultyMode){
     firstAlienKilled = 0, isBulletShot = 0, isBombShot = 0, canShoot = 1;
 
     // Creazione dei thread e uso della detach per liberare la memoria in caso di terminazione del thread
-    pthread_create(&tAllyShip, NULL, allyShipController, NULL);
+    if(pthread_create(&tAllyShip, NULL, allyShipController, NULL)){
+        printExceptions(TYPE_EXCEPTION_THREAD_CREATION_FAILURE);
+    }
     pthread_detach(tAllyShip);
     for(i=0;i<numAliens;i++){
         pthread_mutex_lock(&mutex);
         arg[i] = i;
         pthread_mutex_unlock(&mutex);
-        pthread_create(&tNAliens[i], NULL, enemyShipController, (void*) &arg[i]);
+        if(pthread_create(&tNAliens[i], NULL, enemyShipController, (void*) &arg[i])){
+            printExceptions(TYPE_EXCEPTION_THREAD_CREATION_FAILURE);
+        }
+        
         pthread_detach(tNAliens[i]);
     }
 
@@ -131,8 +136,11 @@ void* allyShipController(){
 
             for(i=0;i<NUMBER_BULLETS;i++){
                 direction = i; 
-                pthread_create(&tNBullets[i], NULL, bulletController, (void*) direction);
+                if(pthread_create(&tNBullets[i], NULL, bulletController, (void*) direction)){
+                    printExceptions(TYPE_EXCEPTION_THREAD_CREATION_FAILURE);
+                }
                 pthread_detach(tNBullets[i]);
+                
             } 
         }
 
@@ -261,7 +269,9 @@ void* enemyShipController (void* idNumberT) {
         
         // Gestione della possibilita' di generare una bomba
         if(generateBomb && rand()%10 == DEFAULT_VALUE){
-            pthread_create(&tNBombs[idNumber], NULL, bombController, idNumberT);
+            if(pthread_create(&tNBombs[idNumber], NULL, bombController, idNumberT)){
+                printExceptions(TYPE_EXCEPTION_THREAD_CREATION_FAILURE);
+            }
             pthread_detach(tNBombs[idNumber]);
             generateBomb = false;
         }
@@ -272,7 +282,7 @@ void* enemyShipController (void* idNumberT) {
             statusBombs[idNumber] = DEFAULT_VALUE;
         }
         
-        usleep(300000);
+        usleep(50000 * numAliens);
     }
 }
 
@@ -309,7 +319,7 @@ void* bombController(void* idNumberT){
  * @return EndGame Variabile che indica se l'utente ha vinto o meno
  */
 EndGame printObjects () {
-    int i, j, nAliensAlive = FULL;
+    int i, j, nAliensAlive = numAliens;
     usleep(10000);
     do {  
         checkCollision(); // Controllo se ci sono state delle collisioni
@@ -381,26 +391,23 @@ void checkCollision(){
 
     // Controllo delle collisioni che coinvolgono la navicella nemica
     for(i=0;i<numAliens;i++){
-        if(statusAliens[i] == OBJ_ALIVE){
-            for(j=0;j<NUMBER_BULLETS;j++){
-                if(statusBullets[j] == OBJ_ALIVE && checkAlienBulletCollision(aliens[i].pos, bullets[j].pos)){ // Collisione proiettile con alieno
-                    pthread_mutex_lock(&mutex);
-                    killThread(tNBullets, statusBullets, j);
-                    clearObjects(winT, p, bullets[j]);
-                    aliens[i].health--;
-                    initializeObject(bullets[j]);
-                    if(aliens[i].health == NO_HEALTH_REMAINING){ // Se l'alieno non ha piu' vita, lo elimino
-                        killThread(tNAliens, statusAliens, i);
-                        clearObjects(winT, p, aliens[i]);
-                        aliens[i].tid = UNDEFINED_TID;
-                        firstAlienKilled = 1;
-                    } 
-                    pthread_mutex_unlock(&mutex);
-                }
+        for(j=0;j<NUMBER_BULLETS;j++){
+            if(statusBullets[j] == OBJ_ALIVE && statusAliens[i] == OBJ_ALIVE && checkAlienBulletCollision(aliens[i].pos, bullets[j].pos)){ // Collisione proiettile con alieno
+                pthread_mutex_lock(&mutex);
+                killThread(tNBullets, statusBullets, j);
+                clearObjects(winT, p, bullets[j]);
+                aliens[i].health--;
+                initializeObject(bullets[j]);
+                if(aliens[i].health == NO_HEALTH_REMAINING){ // Se l'alieno non ha piu' vita, lo elimino
+                    killThread(tNAliens, statusAliens, i);
+                    clearObjects(winT, p, aliens[i]);
+                    aliens[i].tid = UNDEFINED_TID;
+                    firstAlienKilled = 1;
+                } 
+                pthread_mutex_unlock(&mutex);
             }
         }
     }
-    
 }
 
 /**
@@ -526,24 +533,32 @@ bool checkPos (Point p, int yPos, int size) {
     return yPos > Y_HSEPARATOR+size && yPos < p.y-size;
 }
 
+
 /**
- * @brief Funzione che restituisce la dimensione da utilizzare in base alla difficolta'
+ * @brief Funzione che restituisce il numero di alieni in base alla difficolta'
  * 
- * @param difficultyMode Difficolta' della partita
+ * @param difficultyMode Variabile che indica la difficolta' del gioco
  * @return int 
  */
-int getMaxAlien(Difficulty difficultyMode){
-    return difficultyMode == EASY ? NUMBER_ENEMY_SHIPS_EASY : NUMBER_ENEMY_SHIPS_HARD;
+int getMaxAlien(DifficultyType difficultyMode){
+    return difficultyMode.numAliens;
 }
 
 /**
- * @brief Funzione che restituisce la vita massima da utilizzare in base alla difficolta'
+ * @brief Funzione che restituisce la vita massima della navicella alleata in base alla difficolta'
  * 
- * @param difficultyMode Difficolta' della partita
+ * @param difficultyMode Variabile che indica la difficolta' del gioco
  * @return int 
  */
-int getMaxHealth(Difficulty difficultyMode){
-    return difficultyMode == EASY ? FULL : LOW;
+int getMaxHealth(DifficultyType difficultyMode){
+    switch(difficultyMode.type){
+        case EASY:
+            return FULL;
+        case HARD:
+            return LOW;
+        case CUSTOM:
+            return difficultyMode.numAliens > NUMBER_ENEMY_SHIPS_EASY ? LOW : FULL;
+    }
 }
 
 /**

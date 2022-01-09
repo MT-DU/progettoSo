@@ -7,9 +7,9 @@
  * @param p Struttura che contiene la risoluzione della finestra 
  * @param difficultyMode Parametro che indica la difficolta' del gioco
  */
-void mainGame(WINDOW* win, Point p, Difficulty difficultyMode){
+void mainGame(WINDOW* win, Point p, DifficultyType difficultyMode){
     srand(time(NULL));
-    pid_t pidEnemyShips[NUMBER_ENEMY_SHIPS_HARD], allyShip;
+    pid_t pidEnemyShips[MAX_ALIENS], allyShip;
     int fileDes[DIM_PIPE];
     int i, status;
     EndGame gameStatus;
@@ -93,7 +93,7 @@ void allyShipController(WINDOW* win, Point p, int pipeOut){
     int status1 = 0, status2 = 0;
 
     while (true) {
-        write(pipeOut, &ship, sizeof(Object));
+        while(write(pipeOut, &ship, sizeof(Object)) == -1);
         moveAllyShip(win, p, &ship.pos.y, &isBulletShot);
         if(isBulletShot && canShoot){
             switch(bullets[UP_DIRECTION] = fork()){ // Creazione processo proiettile superiore
@@ -136,7 +136,7 @@ void allyShipController(WINDOW* win, Point p, int pipeOut){
  * @param idNumber numero progressivo univoco di ciascun alieno
  * @param difficultyMode Parametro che indica la difficolta' del gioco (in questo caso quanti alieni devono essere generati)
  */
-void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode) {
+void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, DifficultyType difficultyMode) {
     pid_t bomb;
     Object alien;
     int statusPid, i = 0, numSpostamenti = 3;
@@ -153,7 +153,7 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Diffic
     alien.idObj = idNumber;
 
     while(true){
-        write(pipeOut, &alien, sizeof(Object));
+        while(write(pipeOut, &alien, sizeof(Object)) == -1);
         /* SPOSTAMENTO SINCRONO DEGLI ALIENI */
         switch(alien.direction){
             case UP_DIRECTION:
@@ -175,7 +175,6 @@ void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Diffic
                 numSpostamenti++;                
                 break; 
         }
-        //alien.pos.y = alien.direction == UP_DIRECTION ? alien.pos.y-- : alien.pos.y++;
         if(generateBomb && rand()%10 == 0){
             switch (bomb = fork()) {
                 case PROCESS_RETURN_FAILURE:
@@ -236,7 +235,8 @@ void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, 
                     bullet.pos.x += BULLET_PACE;
                 }
             }
-        write(pipeOut, &bullet, sizeof(Object));
+            
+        while(write(pipeOut, &bullet, sizeof(Object)) == -1);
         usleep(100000);
     }
     _exit(SIGUSR1);
@@ -260,7 +260,7 @@ void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut){
     while(bomb.pos.x > 0){ // Ciclo finche' la bomba non e' fuori dalla finestra
         bomb.pos.x--;
         usleep(50000);
-        write(pipeOut, &bomb, sizeof(Object));
+        while(write(pipeOut, &bomb, sizeof(Object)) == -1);
     }
     _exit(SIGUSR2);
 }
@@ -273,17 +273,17 @@ void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut){
  * @param pipeIn Descriptor della pipe dalla quale leggere i dati 
  * @param difficultyMode Variabile che indica la difficolta' del gioco
  */
-EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode) {
+EndGame printObjects (WINDOW* win, Point p, int pipeIn, DifficultyType difficultyMode) {
     // Dichiarazione di variabili di supporto per la check delle collisioni
-    Object allyShip, aliens[NUMBER_ENEMY_SHIPS_HARD], obj;
-    Object bullets[NUMBER_BULLETS], bomb[NUMBER_ENEMY_SHIPS_HARD];
+    Object allyShip, aliens[MAX_ALIENS], obj;
+    Object bullets[NUMBER_BULLETS], bomb[MAX_ALIENS];
     objectArrayInitializer(bullets, NUMBER_BULLETS);
-    objectArrayInitializer(bomb, NUMBER_ENEMY_SHIPS_HARD);
-    objectArrayInitializer(aliens, NUMBER_ENEMY_SHIPS_HARD);
-    int status, i, allyShipHealth = getMaxHealth(difficultyMode), aliensHealth[NUMBER_ENEMY_SHIPS_HARD], nAliensAlive = getMaxAlien(difficultyMode);
+    objectArrayInitializer(bomb, MAX_ALIENS);
+    objectArrayInitializer(aliens, MAX_ALIENS);
+    int status, i, allyShipHealth = getMaxHealth(difficultyMode), aliensHealth[MAX_ALIENS], nAliensAlive = getMaxAlien(difficultyMode);
     bool takeHealth = false, alienAllyCollision = false, firstKill = false;
     EndGame gameStatus = CONTINUE;
-    initializeArray(aliensHealth, NUMBER_ENEMY_SHIPS_HARD, MAX_HEALTH_ALIEN);
+    initializeArray(aliensHealth, MAX_ALIENS, MAX_HEALTH_ALIEN);
     wclear(win);
     do { // Ciclo che si occupa di gestire la visualizzazione degli oggetti e le loro collisioni
         usleep(500);
@@ -519,7 +519,7 @@ bool checkPos (Point p, int yPos, int size) {
  * @param allyShip Processo della navicella alleata
  * @param difficultyMode Variabile che indica la difficolta' del gioco (numero di alieni massimo)
  */
-void endGame(pid_t aliens[], pid_t allyShip, Difficulty difficultyMode){
+void endGame(pid_t aliens[], pid_t allyShip, DifficultyType difficultyMode){
     int i;
     for(i=0; i<getMaxAlien(difficultyMode); i++){
         kill(aliens[i], SIGUSR2);
@@ -533,8 +533,8 @@ void endGame(pid_t aliens[], pid_t allyShip, Difficulty difficultyMode){
  * @param difficultyMode Variabile che indica la difficolta' del gioco
  * @return int 
  */
-int getMaxAlien(Difficulty difficultyMode){
-    return difficultyMode == EASY ? NUMBER_ENEMY_SHIPS_EASY : NUMBER_ENEMY_SHIPS_HARD;
+int getMaxAlien(DifficultyType difficultyMode){
+    return difficultyMode.numAliens;
 }
 
 /**
@@ -543,8 +543,15 @@ int getMaxAlien(Difficulty difficultyMode){
  * @param difficultyMode Variabile che indica la difficolta' del gioco
  * @return int 
  */
-int getMaxHealth(Difficulty difficultyMode){
-    return difficultyMode == EASY ? MAX_HEALTH_ALLY_EASY : MAX_HEALTH_ALLY_HARD;
+int getMaxHealth(DifficultyType difficultyMode){
+    switch(difficultyMode.type){
+        case EASY:
+            return MAX_HEALTH_ALLY_EASY;
+        case HARD:
+            return MAX_HEALTH_ALLY_HARD;
+        case CUSTOM:
+            return difficultyMode.numAliens > NUMBER_ENEMY_SHIPS_EASY ? MAX_HEALTH_ALLY_HARD : MAX_HEALTH_ALLY_EASY;
+    }
 }
 
 /**
@@ -553,8 +560,8 @@ int getMaxHealth(Difficulty difficultyMode){
  * @param difficultyMode Variabile che indica la difficolta' del gioco
  * @return int 
  */
-int getDelay(Difficulty difficultyMode){
-    return difficultyMode == EASY ? DELAY_ALIEN_EASY : DELAY_ALIEN_HARD;
+int getDelay(DifficultyType difficultyMode){
+    return difficultyMode.type == EASY ? DELAY_ALIEN_EASY : DELAY_ALIEN_HARD;
 }
 
 /**

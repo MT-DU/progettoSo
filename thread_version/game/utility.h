@@ -7,12 +7,13 @@
 
 // Macro generiche
 #define DEFAULT_VALUE 0
-#define BLANK_SPACE ' '
 #define UNDEFINED_TID 0
 #define OBJ_ALIVE 100
 #define OBJ_DEAD 104
+#define MIN_ALIENS 1
+#define MAX_ALIENS 12
 
-// Macro relative alla navicella alleta e ai proiettili
+// Macro relative alla navicella alleata e ai proiettili
 #define ROWS_STARSHIP 3
 #define COLS_STARSHIP 6
 #define OUTER_STARSHIP 2
@@ -82,6 +83,11 @@ typedef enum{
 typedef enum{
     LOW = 1, MEDIUM, FULL
 } Health;
+
+typedef struct {
+    int numAliens;
+    Difficulty type;
+} DifficultyType;
 
 typedef struct {
     Point pos;

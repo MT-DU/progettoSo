@@ -82,20 +82,20 @@
 #define BACK_TO_MAIN_MENU "Ritorno al menu principale tra: %d"
 
 // Dichiarazione delle funzioni e procedure utilizzate 
-void mainGame(WINDOW* win, Point p, Difficulty difficultyMode);
+void mainGame(WINDOW* win, Point p, DifficultyType difficultyMode);
 void hudGame(WINDOW* win, Point p, int allyShipHealth, int nAliens);
 void allyShipController(WINDOW* win, Point p, int pipeOut);
-void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, Difficulty difficultyMode);
+void enemyShipController(WINDOW* win, Point p, int pipeOut, int idNumber, DifficultyType difficultyMode);
 void bulletController(WINDOW* win, Point p, Point posShip, Direction direction, int pipeOut);
 void bombController(WINDOW* win, Point p, Point posAlien, int pipeOut);
-EndGame printObjects (WINDOW* win, Point p, int pipeIn, Difficulty difficultyMode);
+EndGame printObjects (WINDOW* win, Point p, int pipeIn, DifficultyType difficultyMode);
 EndGame isGameOver(int healthAllyShip, bool alienAllyCollision, int nAliensAlive);
 void printStarShip (WINDOW* win, Point p, Object ship);
 void printBullet (WINDOW* win, Object bullet);
 void moveAllyShip (WINDOW* win, Point p, int* yPos, int* isBulletShot);
 bool checkPos (Point p, int yPos, int size);
-void endGame(pid_t aliens[], pid_t allyShip, Difficulty difficultyMode);
-int getMaxAlien(Difficulty difficultyMode);
-int getMaxHealth(Difficulty difficultyMode);
-int getDelay(Difficulty difficultyMode);
+void endGame(pid_t aliens[], pid_t allyShip, DifficultyType difficultyMode);
+int getMaxAlien(DifficultyType difficultyMode);
+int getMaxHealth(DifficultyType difficultyMode);
+int getDelay(DifficultyType difficultyMode);
 void endGamePrint(WINDOW* win, Point p, EndGame gameStatus);

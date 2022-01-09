@@ -33,6 +33,8 @@
 #define ENTITY_TYPES 5
 #define MAX_ENTITY_ACTIVE 5
 #define UNDEFINED_PID -2
+#define MIN_ALIENS 1
+#define MAX_ALIENS 12
 
 // Dichiarazione delle enumerazioni e delle struct utilizzate
 
@@ -49,12 +51,17 @@ typedef enum {
 } EndGame;
 
 typedef enum{
-    EASY, HARD
+    EASY, HARD, CUSTOM
 } Difficulty;
 
 typedef enum{
     LOW = 1, MEDIUM, FULL
 } Health;
+
+typedef struct {
+    int numAliens;
+    Difficulty type;
+} DifficultyType;
 
 typedef struct {
     Point pos;

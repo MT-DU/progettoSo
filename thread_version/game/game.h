@@ -38,7 +38,7 @@
 #define ALIENS_TEXT_HUD "Aliens remaining: %d"
 
 // Dichiarazione delle funzioni/procedure utilizzate
-void mainGame(WINDOW* win, Difficulty difficultyMode);
+void mainGame(WINDOW* win, DifficultyType difficultyMode);
 void hudGame(int allyShipHealth, int nAliens);
 void* allyShipController();
 void* bulletController();
@@ -50,8 +50,8 @@ void printStarShip (Object ship);
 void printBullet (Object bullet);
 void moveAllyShip ();
 bool checkPos (Point p, int yPos, int size);
-int getMaxAlien(Difficulty difficultyMode);
-int getMaxHealth(Difficulty difficultyMode);
+int getMaxAlien(DifficultyType difficultyMode);
+int getMaxHealth(DifficultyType difficultyMode);
 EndGame isGameOver (int nAliensAlive);
 void initializeBuffers();
 void killThread(pthread_t* thread, int* statusBuffer, int id);
