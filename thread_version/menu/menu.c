@@ -164,7 +164,7 @@ void tutorial (WINDOW* win, Point max_res) {
         mvwprintw(win, max_res.y-4, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_9)), INTRO_9);
         turnOffColor(win, PAIR_COLOR_LOGO);
         mvwprintw(win, max_res.y-2, divideByTwo(max_res.x) - divideByTwo(strlen(INTRO_10)), INTRO_10);
-        wtimeout(win, 1);
+        wtimeout(win, 10);
     }  while(wgetch(win)!=ASCII_CODE_ENTER);  
 }
 
