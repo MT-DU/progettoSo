@@ -257,16 +257,22 @@ void customDifficulty(WINDOW* win, Point max_res, DifficultyType* difficultyMode
 void printCustomMenu(WINDOW* win, Point max_res, int numAliens){
     int longestStringDivided = divideByTwo(strlen(CUSTOM_MODE_PRINT_HINT)), i;
     int yDivided = divideByTwo(max_res.y), xDivided = divideByTwo(max_res.x);
-    int y = yDivided + SPACE_BETWEEN_CHOICES;
     int x = xDivided - divideByTwo(strlen(CUSTOM_MODE_PRINT));
-    for(i=yDivided;i<=y+1;i++){
-        mvwaddch(win, i, xDivided - longestStringDivided - 1, '|');
-        mvwaddch(win, i, xDivided + longestStringDivided + 1, '|');
-    }
-    for(i=xDivided - longestStringDivided;i<(xDivided + longestStringDivided + 1);i++){
-        mvwaddch(win, yDivided-1, i, '_');
-        mvwaddch(win, y+1, i, '_');
-    }
-    mvwprintw(win, yDivided, xDivided - longestStringDivided, CUSTOM_MODE_PRINT_HINT);
-    mvwprintw(win, y, x, CUSTOM_MODE_PRINT, numAliens);
+
+    int x1, x2, y1, y2;
+    x1 = xDivided - longestStringDivided - CUSTOM_MODE_NUMBER;
+    x2 = xDivided + longestStringDivided + CUSTOM_MODE_NUMBER;
+    y1 = yDivided - SPACE_BETWEEN_CHOICES - CUSTOM_MODE_NUMBER;
+    y2 = yDivided + SPACE_BETWEEN_CHOICES + CUSTOM_MODE_NUMBER;
+    mvhline(y1, x1, 0, x2-x1);
+    mvhline(y2, x1, 0, x2-x1);
+    mvvline(y1, x1, 0, y2-y1);
+    mvvline(y1, x2, 0, y2-y1);
+    mvaddch(y1, x1, ACS_ULCORNER);
+    mvaddch(y2, x1, ACS_LLCORNER);
+    mvaddch(y1, x2, ACS_URCORNER);
+    mvaddch(y2, x2, ACS_LRCORNER);
+
+    mvwprintw(win, yDivided - SPACE_BETWEEN_CHOICES, xDivided - longestStringDivided, CUSTOM_MODE_PRINT_HINT);
+    mvwprintw(win, yDivided + SPACE_BETWEEN_CHOICES, x, CUSTOM_MODE_PRINT, numAliens);
 }

@@ -39,7 +39,7 @@
 #define HARD_MODE "Hard Mode"
 #define CUSTOM_MODE "Custom Mode"
 #define CUSTOM_MODE_PRINT "Number of Aliens: %d"
-#define CUSTOM_MODE_PRINT_HINT "Hint: Press up or down to increment or decrement the number"
+#define CUSTOM_MODE_PRINT_HINT "Hint: Press UP or DOWN key to increment or decrement the value"
 #define PRINT_MENU_GAME_MODE 1 
 #define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"

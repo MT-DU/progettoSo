@@ -98,6 +98,7 @@ void hudGame(int allyShipHealth, int nAliens){
     int length = strlen(HEALTH_TEXT_HUD)+PASSO;
     int healthPosX = HEALTH_BAR_POS_X+length;
     
+    // Stampa della vita della nave
     mvwprintw(winT, TEXT_HUD_POS_Y, HEALTH_BAR_POS_X, HEALTH_TEXT_HUD);
     mvwprintw(winT, TEXT_HUD_POS_Y, healthPosX, HEALTH_SPACE_HUD);
     pickColor(winT, PAIR_COLOR_HEART);
@@ -105,7 +106,10 @@ void hudGame(int allyShipHealth, int nAliens){
         mvwprintw(winT, TEXT_HUD_POS_Y, healthPosX+i*3, "<3 ");
     }
     turnOffColor(winT, PAIR_COLOR_HEART);
+
+    // Stampa del numero di alieni rimanenti
     pickColor(winT, PAIR_COLOR_ALIENS_REMAINING);
+    mvwprintw(wint, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X + strlen(ALIENS_TEXT_HUD)-1, BLANK_SPACES_ALIEN);
     mvwprintw(winT, TEXT_HUD_POS_Y, NUMBER_ALIENS_BAR_POS_X, ALIENS_TEXT_HUD, nAliens);
     turnOffColor(winT, PAIR_COLOR_ALIENS_REMAINING);
 }
