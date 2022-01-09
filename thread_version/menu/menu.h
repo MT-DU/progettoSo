@@ -1,12 +1,13 @@
 #include "../game/game.h"
 
-/* DEFINIZIONE MACRO */
+// Macro Generiche
 #define NO_CURSOR 0
 #define YES_CURSOR 1
 #define ASCII_CODE_q 113
 #define ASCII_CODE_Q 81
 #define ASCII_CODE_ENTER 10
-#define NUMBER_CHOICES 3 //indica il numero di scelte per menu, da modificare nel caso in cui si aumentino i casi dei vari menu
+#define NUMBER_CHOICES 3
+#define PRINT_NO_MENU 2
 
 // Macro relative all'hud e al logo
 #define Y_HLINE 6
@@ -14,8 +15,8 @@
 #define LOGO2 "|_ -| . | .'|  _| -_|  | . | -_|  _| -_|   | . | -_|  _|_ -|"
 #define LOGO3 "|___|  _|__,|___|___|  |___|___|_| |___|_|_|___|___|_| |___|"
 #define LOGO4 "    |_|                                                     "
-#define SIZE_LOGO 61 // lunghezza della stringa della singola macro logo
-#define NUM_LOGHI 4 // tiene conto del numero di macro per i logo ci sono
+#define SIZE_LOGO 61 // lunghezza delle stringhe che compongono il logo
+#define NUM_LOGHI 4 // altezza del logo
 
 // Macro relative al menu principale
 #define PLAY_GAME_NUMBER 0

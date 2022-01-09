@@ -1,12 +1,12 @@
 #include "../game/game.h"
 
-/* DEFINIZIONE MACRO */
+// Macro Generiche
 #define NO_CURSOR 0
 #define YES_CURSOR 1
 #define ASCII_CODE_q 113
 #define ASCII_CODE_Q 81
 #define ASCII_CODE_ENTER 10
-#define NUMBER_CHOICES 3 //indica il numero di scelte per menu, da modificare nel caso in cui si aumentino i casi dei vari menu
+#define NUMBER_CHOICES 3
 
 // Macro relative all'hud e al logo
 #define Y_HLINE 6
@@ -14,8 +14,8 @@
 #define LOGO2 "|_ -| . | .'|  _| -_|  | . | -_|  _| -_|   | . | -_|  _|_ -|"
 #define LOGO3 "|___|  _|__,|___|___|  |___|___|_| |___|_|_|___|___|_| |___|"
 #define LOGO4 "    |_|                                                     "
-#define SIZE_LOGO 61 // lunghezza della stringa della singola macro logo
-#define NUM_LOGHI 4 // tiene conto del numero di macro per i logo ci sono
+#define SIZE_LOGO 61 // lunghezza delle stringhe che compongono il logo
+#define NUM_LOGHI 4 // altezza del logo
 
 // Macro relative al menu principale
 #define PLAY_GAME_NUMBER 0
@@ -39,6 +39,26 @@
 #define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"
 
+// Macro relative alla schermata di introduzione
+#define PRINT_NO_MENU 2
+#define DELAY_TUTORIAL 1000000
+#define ROWS_TUTORIAL 9
+#define SPACE_BETWEEN_CHOICES 1
+#define SPACE_FROM_BORDER 5
+#define SPACE_FROM_CENTER 8
+#define INTRO_1 "Welcome to Space Defender!"
+#define INTRO_2 "You can move the spaceship with the UP and DOWN arrow keys."
+#define INTRO_3 "You can shoot with the SPACE key."
+#define INTRO_4 "You can't have more than one pair of bullets on the screen."
+#define INTRO_5 "The enemy ships will shoot at you."
+#define INTRO_6 "If you are hit by an enemy bomb, you will lose a life."
+#define INTRO_7 "You win if you destroy all the enemy ships."
+#define INTRO_8 "You lose if you get to 0 lives or an enemy get to the starship column."
+#define INTRO_9 "Good luck!"
+#define INTRO_10 "By Matteo Tuzi & Davide Uccheddu"
+#define INTRO_11 "The game will start in"
+#define STAMPA_INTRO_MENU {{INTRO_1},{INTRO_2},{INTRO_3},{INTRO_4},{INTRO_5},{INTRO_6},{INTRO_7},{INTRO_8},{INTRO_9}}
+
 // Dichiarazione delle funzioni e procedure utilizzate 
 void mainApp();
 void mainWindow();
@@ -46,6 +66,7 @@ void mainMenu(WINDOW *win, Point max_res);
 void hudMainMenu(WINDOW *win, Point max_res, int menu);
 void printLogo(WINDOW *win, Point max_res);
 void selectOptionMainMenu(WINDOW* win, Point max_res, int* input, int counter, Difficulty* difficultyMode);
+void tutorial (WINDOW* win, Point max_res);
 void gameMode (WINDOW* win, Point max_res, Difficulty* difficultyMode);
 void selectDifficulty(WINDOW* win, Point max_res, int input, int counter, Difficulty* difficultyMode, bool* isPicked);
 
