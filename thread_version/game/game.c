@@ -252,21 +252,25 @@ void* enemyShipController (void* idNumberT) {
     while(true){
         switch(aliens[idNumber].direction){ // Gestione del movimento dell'alieno
             case UP_DIRECTION:
+                pthread_mutex_lock(&mutex);
                 if(numSpostamenti == MIN_MOVE_ALIEN){
                     aliens[idNumber].direction = DOWN_DIRECTION;
                     aliens[idNumber].pos.x--;
                 }else{
                     aliens[idNumber].pos.y--;
                 }
+                pthread_mutex_unlock(&mutex);
                 numSpostamenti--;
                 break;
             case DOWN_DIRECTION:
+                pthread_mutex_lock(&mutex);
                 if(numSpostamenti == MAX_MOVE_ALIEN){
                     aliens[idNumber].direction = UP_DIRECTION;
                     aliens[idNumber].pos.x--;
                 }else{
                     aliens[idNumber].pos.y++;
                 }
+                pthread_mutex_unlock(&mutex);
                 numSpostamenti++;                
                 break; 
         }
