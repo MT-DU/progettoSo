@@ -48,13 +48,13 @@ void printMenu (WINDOW* win, Point max_res, int selection, int row, char vetStri
         x = xDivided - longestStringDivided - CREATE_OFFSET_SPACES;
         mvwaddch(win, y, x, SELECTOR);
         if(i == selection){
-            pickColor(win, PAIR_COLOR_LOGO);
+            pickColor(win, PAIR_COLOR_MAIN_MENU);
         }
         y = yDivided + SPACE_BETWEEN_CHOICES*i;
         x = xDivided - divideByTwo(strlen(vetStringsMenu[i]));
         mvwprintw(win, y, x, vetStringsMenu[i]);
         if(i == selection){
-            turnOffColor(win, PAIR_COLOR_LOGO);
+            turnOffColor(win, PAIR_COLOR_MAIN_MENU);
         }
     }
     
@@ -110,6 +110,7 @@ void setupColors(){
     init_pair(PAIR_COLOR_BOMB, COLOR_RED, COLOR_BLACK);
     init_pair(PAIR_COLOR_HEART, COLOR_RED, COLOR_BLACK);
     init_pair(PAIR_COLOR_ALIENS_REMAINING, COLOR_RED, COLOR_BLACK);
+    init_pair(PAIR_COLOR_MAIN_MENU, COLOR_GREEN, COLOR_BLACK);
 }
 
 /**
