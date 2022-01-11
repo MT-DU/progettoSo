@@ -331,6 +331,7 @@ EndGame printObjects () {
     usleep(10000);
     do {  
         checkCollision(); // Controllo se ci sono state delle collisioni
+        wclear(winT);
 
         gameStatus = isGameOver(nAliensAlive); // Controllo se il gioco e' finito
 
