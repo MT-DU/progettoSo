@@ -43,6 +43,7 @@
 #define PRINT_MENU_GAME_MODE 1 
 #define LABEL_GAME_MODE_MENU {{EASY_MODE},{HARD_MODE},{CUSTOM_MODE}}
 #define BACK_LABEL_HUD "Press q to go back"
+#define PRINT_NO_MENU 2
 
 // Macro relative alla schermata di introduzione
 #define INTRO_1 "Welcome to Space Defender!"

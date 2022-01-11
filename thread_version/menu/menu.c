@@ -258,7 +258,7 @@ void customDifficulty(WINDOW* win, Point max_res, DifficultyType* difficultyMode
     int getInput;
     do{
         wclear(win);
-        hudMainMenu(win, max_res, PRINT_MENU_GAME_MODE, *difficultyMode);
+        hudMainMenu(win, max_res, PRINT_NO_MENU, *difficultyMode);
         printCustomMenu(win, max_res, difficultyMode->numAliens);
         getInput = wgetch(win);
         keyPadSelector(MIN_ALIENS, MAX_ALIENS, getInput, &difficultyMode->numAliens);

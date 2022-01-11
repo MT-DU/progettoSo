@@ -412,6 +412,7 @@ void checkCollision(){
                     clearObjects(winT, p, aliens[i]);
                     aliens[i].tid = UNDEFINED_TID;
                     firstAlienKilled = 1;
+                    wclear(winT);
                 } 
                 pthread_mutex_unlock(&mutex);
             }
