@@ -1,8 +1,0 @@
-IDEE:
-x Permettere all'utente di selezionare una difficoltà (maggiore velocità delle astronavi, possibilità di mettere numero custom di nemici lo vogliono i prof)
-x implementare mini istruzioni di tutorial per come funziona il gioco
-
-x fare in modo che l'utente capisca se ha selezionato la modalità facile o difficile (attron)
-x ottimizzazione del codice, aggiungere commenti
-x controllare scrittura e lettura su buffer vuoto/pieno
-x gestione errori thread
