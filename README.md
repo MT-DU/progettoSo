@@ -22,7 +22,7 @@ The user can control an ally starship which can move only vertically in the left
 
 The ally starship can fire 2 bullets diagonally when user presses the _space bar_ key: when bullets hit upper or lower walls they bounce back, when they hit an enemy or the right border they disappear.
 
-In the right part of the screen there are 3 enemies if game mode is easy, 9 if hard, up to 12 if custom, 3 per column. Enemy starships move together following a specific pattern (every 5 vertically moves, they move horizontally once). Every time _rand()%10_ is equal to 0, enemy starship shoots a bomb that moves from right to left until  hit ally starship or left border.
+In the right part of the screen there are 3 enemies if game mode is easy, 9 if hard, up to 12 if custom, 3 per column. Enemy starships move together following a specific pattern (every 5 vertically moves, they move horizontally once). Every time _rand()%10_ is equal to 0, enemy starship shoots a bomb that moves from right to left until it collides with ally starship or left border.
 
 When an enemy starship is hit, in its place spawns a level 2 enemy starship with a different sprite and 2 health points, so the enemy starship has 3 total health points.
 
@@ -52,11 +52,11 @@ Here a graphical representation of the process version:
 
 ## Technical Analysis threads version
 
-The threads version is based on global variables for communication between threads, taking advantage of shared memory; a common issue of shared memory synchronization is critical section management which is solved with mutexes in this project. All threads are initialized with pthreads_create and ptread_detach, in order to automatically free resources after they end their execution.
+The threads version is based on global variables for communication between threads, taking advantage of shared memory; a common issue of shared memory synchronization is critical section management which is solved with mutexes in this project. All threads are initialized with pthreads_create and pthread_detach, in order to automatically free resources after they end their execution.
 
 Used functions/procedures:
 
-- **void mainGame** : it manages game start: create ally and enemy starships threads based on difficultyMode.numAliens variable; then all buffers, global and state variables are initialized. After printing loop ends, all resources are deallocated and any running thread is terminated.
+- **void mainGame** : it manages game start: create ally and enemy starships threads based on difficultyMode variable; then all buffers, global and state variables are initialized. After printing loop ends, all resources are deallocated and any running thread is terminated.
 - **void\* allyShipController** : it manages ally starship movements and firing bullets; during initialization a mutex is used to avoid memory consistency errors. When user presses the _space bar_ key, 2 threads are created and associated to bulletController function. Like process version, there are controls to avoid multiple bullets spawn.
 - **void\* bulletController** : it manages bullets movements; an argument is passed to this function to access the _bullets_ buffer. Every coordinates update is managed by mutex lock and unlock.
 - **void\* enemyShipController** : this function is assigned to N thread (N is number of enemies). The argument idNumberT is an id used to access the right buffer cell. Like the ally function, a mutex is used to avoid memory consistency errors. The movement pattern is the same as process version but updated inside a mutex lock unlock section. When _rand()%10_ is equal to 0 and there aren't any existing bombs with same idNumberT, a thread is created and associate to bombController.
@@ -65,7 +65,7 @@ Used functions/procedures:
 - **void checkCollision** : this procedure check collisions and manages game status. If a collision between ally and enemy starship is detected, the game ends and gameStatus is set to _DEFEAT_. If a collision between ally starship and bomb or enemy starship and bullet is detected, the bullet/bomb thread is killed and the starship lose a health point; if it reaches 0, also starship thread is terminated and its status is set to __OBJ_DEAD__.
 - **EndGame isGameOver** : this function verify if game is over checking the number of enemies alive and ally starship health points and return the right value.
 
-Here a graphical representation of the process version:
+Here a graphical representation of the threads version:
 
 ![](/Documents/AnalisiThread.png)
 
